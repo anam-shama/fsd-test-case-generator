@@ -80,3 +80,19 @@ Generate test cases from fsd/RT-5678-checkout.pdf
 ```
 [paste FSD content] — generate full test coverage for RT-9012
 ```
+
+## Publish to GitHub
+
+The repository is ready to push. Authenticate and run:
+
+```bash
+export GITHUB_TOKEN=your_github_token   # needs repo scope
+./scripts/push-to-github.sh fsd-test-case-generator
+```
+
+Or manually:
+
+```bash
+gh auth login
+gh repo create fsd-test-case-generator --public --source=. --remote=origin --push
+```
