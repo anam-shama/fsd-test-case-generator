@@ -305,6 +305,16 @@ app.use((err, _req, res, _next) => {
   res.status(400).json({ error: err.message || "Request failed" });
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`FSD Test Case Agent running at http://localhost:${PORT}`);
+});
+
+server.on("error", (err) => {
+  if (err.code === "EADDRINUSE") {
+    console.error(
+      `Port ${PORT} is already in use. Stop the other process or set PORT to a different value.`
+    );
+    process.exit(1);
+  }
+  throw err;
 });
