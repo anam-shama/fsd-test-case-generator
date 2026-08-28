@@ -1,0 +1,78 @@
+{
+  "project": "RT-956",
+  "generatedAt": "2026-08-28T08:16:59.445Z",
+  "agent": "fsd-test-case-generator",
+  "version": "1.2.0",
+  "summary": {
+    "totalTestCases": 50,
+    "totalRequirements": 24,
+    "byLayer": {
+      "Frontend": 32,
+      "Integration": 7,
+      "Backend": 11
+    },
+    "byType": {
+      "Positive": 32,
+      "Negative": 14,
+      "Boundary": 1,
+      "Regression": 3
+    },
+    "byPriority": {
+      "P0": 22,
+      "P1": 19,
+      "P2": 9
+    },
+    "byModule": {
+      "Onboarding": 2,
+      "Eligibility": 4,
+      "Sampling Banner": 10,
+      "Add Pack CTA": 2,
+      "Offer Expiry": 1,
+      "Unsubscribed Banner": 4,
+      "UI/UX": 1,
+      "Offer Unlocked Screen": 1,
+      "Access Unlocked Screen": 1,
+      "Responsive UI": 2,
+      "CMS Configuration": 1,
+      "Account Status": 3,
+      "Analytics": 3,
+      "PubNub API": 2,
+      "Mixpanel": 2,
+      "MoEngage": 2,
+      "Performance": 1,
+      "Backward Compatibility": 2,
+      "Out of Scope": 3,
+      "Regression": 3
+    },
+    "baQueries": {
+      "total": 10,
+      "blockers": 3,
+      "open": 10,
+      "file": "ba-open-queries.md"
+    }
+  },
+  "files": [
+    "RT-956-qa-pack.zip",
+    "api-test-cases.csv",
+    "ba-open-queries.md",
+    "backend-test-cases.csv",
+    "coverage-summary.md",
+    "frontend-test-cases.csv",
+    "full-report.md",
+    "jira-import.csv",
+    "qa-pack-manifest.json",
+    "regression-test-cases.csv",
+    "test-cases.csv",
+    "testrail-import.csv",
+    "validation-report.json"
+  ],
+  "exports": {
+    "standard": "test-cases.csv",
+    "frontend": "frontend-test-cases.csv",
+    "backend": "backend-test-cases.csv",
+    "testrail": "testrail-import.csv",
+    "jira": "jira-import.csv",
+    "baOpenQueries": "ba-open-queries.md",
+    "zip": "RT-956-qa-pack.zip"
+  }
+}

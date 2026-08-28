@@ -36,9 +36,11 @@ fsd/*
 !fsd/README.md
 !fsd/.gitkeep
 
-# Generated test case output
+# Generated test case output (track committed deliverables; new runs stay local until added)
 output/*
 !output/.gitkeep
+!output/RT-956/
+!output/RT-956/**
 
 # Archived FSD uploads and previous output (may contain sensitive client documents)
 archive/

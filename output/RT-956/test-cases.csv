@@ -1,0 +1,133 @@
+Test Case ID,Requirement ID,Module,Test Scenario,Preconditions,Test Data,Test Steps,Expected Result,Test Type,Layer,Priority,Platform
+TC_001,FR-001,Onboarding,Verify First Month Free Offer is communicated during new user onboarding,New registered user without any pack/subscription; first app launch after feature release,Eligible new user account,"1. Install app version released after this feature
+2. Register as new user
+3. Complete onboarding flow
+4. Observe offer messaging and terms presentation",First Month Free Offer and associated terms are clearly communicated during onboarding per FSD UX section,Positive,Frontend,P0,Android/iOS
+TC_002,FR-014,Eligibility,Verify eligible new registered user without subscription sees promotional offer,New registered user; no pack or channel subscription taken post registration,User with zero subscriptions,"1. Log in as new registered user with no subscriptions
+2. Navigate to sampling-enabled content
+3. Observe promotional/sampling UI",Promotional offer and sampling banner are visible to eligible user,Positive,Frontend,P0,Android/iOS
+TC_003,FR-014,Eligibility,Verify existing user with any subscription does not see promo banner,User registered and has taken any pack/subscription post registration,User with active channel/pack subscription,"1. Log in as user with existing subscription
+2. Navigate to content that would be sampling-enabled for eligible users
+3. Observe banners",Promo/sampling banner is NOT displayed; user is not eligible per FSD,Negative,Frontend,P0,Android/iOS
+TC_004,FR-014,Eligibility,Verify user who subscribed after registration is not eligible for promo banner,User took subscription after initial registration,Post-registration subscriber,"1. Log in as user who subscribed after registration
+2. Open sampling-enabled content
+3. Verify banner visibility",Promotional sampling banner is not shown,Negative,Frontend,P0,Android/iOS
+TC_005,FR-002,Sampling Banner,Verify sampling banner displays remaining days and expiry month during free content consumption,Eligible user with active free offer; viewing sampling-enabled content,Offer with known remaining days,"1. Log in as eligible user
+2. Play/view sampling-enabled free content
+3. Observe sampling banner text",Banner displays: Only xx days left to watch for free – till xx Month with correct values from backend,Positive,Frontend,P0,Android/iOS
+TC_006,FR-003,Sampling Banner,Verify sampling banner appears below the player during playback,Eligible user playing sampling-enabled content,Active free offer content,"1. Start playback of sampling-enabled content
+2. Observe area below player",Sampling banner is displayed below the player,Positive,Frontend,P0,Android/iOS
+TC_007,FR-003,Sampling Banner,Verify sampling banner appears in content lists for relevant items,Eligible user browsing content lists with sampling-enabled items,Content list with sampling-enabled entries,"1. Navigate to content list containing sampling-enabled items
+2. Locate relevant list items
+3. Observe banner on list items",Sampling banner is displayed in content lists for applicable items,Positive,Frontend,P1,Android/iOS
+TC_008,FR-002,Sampling Banner,Verify Add Pack CTA is visible on sampling banner,Eligible user; promotional subscription not yet availed,Sampling-enabled content,"1. View sampling banner on player or list
+2. Observe CTA on banner",Add Pack CTA is visible and clearly labeled on the sampling banner,Positive,Frontend,P0,Android/iOS
+TC_009,FR-018,Add Pack CTA,Verify Add Pack CTA is generic until user avails promotion on PI page,Eligible user has not availed promotion on PI page,Pre-availment state,"1. View sampling banner before availing offer on PI
+2. Note CTA label and behaviour
+3. Tap Add Pack",CTA displays generic Add Pack label and navigates to appropriate pack/subscription flow,Positive,Frontend,P1,Android/iOS
+TC_010,FR-018,Add Pack CTA,Verify Add Pack CTA is hidden after promotion offer availed on PI page,User avails promotional subscription on PI page; entitlement updates in real time,Post-availment eligible user,"1. Avail promotion offer on PI page
+2. Return to sampling-enabled content
+3. Observe banner CTA",Add Pack CTA is no longer displayed after entitlement changes in real time,Positive,Integration,P0,Android/iOS
+TC_011,FR-005,Sampling Banner,Verify sampling banner not shown when promotion subscription availed,User has availed promotional subscription,Availed promotion user,"1. Log in as user who availed promotion subscription
+2. Open sampling-enabled content
+3. Observe banner area",Sampling banner is NOT displayed for sampling-enabled content when promotion is availed,Negative,Frontend,P0,Android/iOS
+TC_012,FR-006,Sampling Banner,Verify sampling banner shown when promotion subscription not availed,Eligible user; promotion not availed,Un-availed promotion user,"1. Log in as eligible user without availed promotion
+2. Open sampling-enabled content
+3. Observe banner",Sampling banner IS displayed for sampling-enabled content,Positive,Frontend,P0,Android/iOS
+TC_013,FR-004,Sampling Banner,Verify sampling banner disappears when offer no longer applicable,User offer period has ended or eligibility revoked,Expired/ineligible offer state,"1. Use account where offer is no longer applicable
+2. Open previously sampling-enabled content
+3. Observe banner",Sampling banner is not displayed when offer is no longer applicable,Negative,Frontend,P0,Android/iOS
+TC_014,FR-007,Offer Expiry,Verify expiry notification banner before offer ends,Eligible user nearing offer end date,User with 1-2 days remaining,"1. Log in as user with offer nearing expiry
+2. View free content
+3. Read banner messaging",Banner shows Only xx days left to watch for free – till xx Month as expiry notification,Positive,Frontend,P1,Android/iOS
+TC_015,FR-015,Sampling Banner,Verify remaining days on banner update in real time,Eligible user with active offer; cross midnight boundary or backend refresh,Active offer account,"1. Note remaining days on banner
+2. Wait for day rollover or trigger refresh
+3. Re-observe banner",Remaining days count updates accurately in real time per PubNub/backend data,Positive,Integration,P1,Android/iOS
+TC_016,FR-008,Unsubscribed Banner,Verify unsubscribed channel banner when user not subscribed to channel,User not subscribed to channel being viewed; sampling may apply,Unsubscribed channel content,"1. Open content for channel user is not subscribed to
+2. Observe banner above CTA",Banner displays: You have not subscribed to this Channel above the CTA,Positive,Frontend,P0,Android/iOS
+TC_017,FR-009,Unsubscribed Banner,Verify unsubscribed banner shown for sampling-enabled content,User not subscribed; content is sampling-enabled,Unsubscribed + sampling content,"1. Open sampling-enabled content for unsubscribed channel
+2. Observe banners",You have not subscribed to this Channel banner is displayed alongside applicable sampling behaviour per Figma option 1,Positive,Frontend,P1,Android/iOS
+TC_018,FR-019,Unsubscribed Banner,Verify unsubscribed banner stays generic until user adds that channel,User has not added/subscribed to specific channel,Single unsubscribed channel,"1. View unsubscribed channel content
+2. Note banner text
+3. Without subscribing navigate to another unsubscribed channel",Banner text remains generic You have not subscribed to this Channel until user adds that particular channel,Positive,Frontend,P2,Android/iOS
+TC_019,FR-010,UI/UX,Verify promo banner matches Figma option 1 final design,Figma handoff available; eligible user,Figma reference node 18113-64268,"1. Open sampling/unsubscribed banner on device
+2. Compare layout typography CTA placement with Figma Promo banner option 1",UI matches Figma Promo banner option 1 (final) design,Positive,Frontend,P1,Android/iOS
+TC_020,FR-020,Offer Unlocked Screen,Verify Offer Unlocked screen text rendered from backend,User triggers Offer Unlocked screen,Eligible new user,"1. Navigate to Offer Unlocked screen
+2. Observe displayed text
+3. Compare with backend-provided copy",Text on Offer Unlocked screen matches backend-provided content,Positive,Integration,P1,Android/iOS
+TC_021,FR-020,Access Unlocked Screen,Verify Access Unlocked screen text rendered from backend,User triggers Access Unlocked screen,Eligible new user,"1. Navigate to Access Unlocked screen
+2. Observe displayed text",Text on Access Unlocked screen matches backend-provided content,Positive,Integration,P1,Android/iOS
+TC_022,FR-020,Responsive UI,Verify Access/Offer Unlocked text adjusts for mobile screen size,Mobile device (phone form factor),Phone device,"1. Open Access Unlocked and Offer Unlocked screens on phone
+2. Verify text wrapping and layout",Text adjusts appropriately for mobile screen size without truncation or overlap,Positive,Frontend,P2,Android/iOS
+TC_023,FR-020,Responsive UI,Verify Access/Offer Unlocked text adjusts for tablet and iPad,Tablet/iPad device,Tablet/iPad,"1. Open screens on tablet and iPad
+2. Verify text layout",Text adjusts appropriately for tablet and iPad screen sizes,Positive,Frontend,P2,Android/iOS
+TC_024,FR-017,CMS Configuration,Verify sampling banner message is configurable from CMS,CMS updated with new banner copy,CMS test message configured,"1. Update banner text via CMS
+2. Refresh app content for eligible user
+3. Observe banner",Banner displays CMS-configured message text,Positive,Integration,P1,Android/iOS
+TC_025,FR-013,Account Status,Verify banners disabled for suspended account,User account status = Suspended,Suspended account,"1. Log in as suspended user
+2. Navigate to content
+3. Observe sampling and promo banners",Banners are not displayed for suspended account,Negative,Frontend,P0,Android/iOS
+TC_026,FR-013,Account Status,Verify banners disabled for inactive account,User account status = Inactive,Inactive account,"1. Log in as inactive user
+2. Navigate to content
+3. Observe banners",Banners are not displayed for inactive account,Negative,Frontend,P0,Android/iOS
+TC_027,FR-013,Analytics,Verify tracking disabled for suspended/inactive accounts,Suspended or inactive account,Suspended account,"1. Perform actions that would trigger promo events on active account
+2. Monitor analytics pipeline",No FREE-PROMOTION-SUBSCRIPTION / FREE_PROMOTION_SUBSCRIPTION events fired for suspended/inactive accounts,Negative,Backend,P0,Android/iOS
+TC_028,FR-011,PubNub API,Verify PubNub returns campaign eligibility and remaining offer days,Eligible user; PubNub channel subscribed,Active campaign user,"1. Log in as eligible user
+2. Monitor PubNub messages/API
+3. Verify eligibility flag and remaining days payload",PubNub delivers user campaign eligibility and accurate remaining offer days,Positive,Backend,P0,Android/iOS
+TC_029,FR-012,Account Status,Verify user account status updates dynamically when offer subscribed,Eligible user subscribes to promotional offer,Pre-subscription eligible user,"1. Note account status before subscription
+2. Complete promotional subscription
+3. Verify account status and UI update without re-login",User account status updates dynamically in real time after offer subscription,Positive,Integration,P0,Android/iOS
+TC_030,FR-016,Mixpanel,Verify FREE-PROMOTION-SUBSCRIPTION event with SOURCEFIRST-TIME-LOGIN=TRUE on first login,First-time login eligible user with active promotional offer,First login session,"1. Log in for first time with active promo offer
+2. Capture Mixpanel events
+3. Verify event payload",FREE-PROMOTION-SUBSCRIPTION event fired with SOURCEFIRST-TIME-LOGIN=TRUE,Positive,Backend,P0,Android/iOS
+TC_031,FR-016,Mixpanel,Verify FREE-PROMOTION-SUBSCRIPTION event with SOURCEFIRST-TIME-LOGIN=FALSE on second login,Second login eligible user with active promotional offer,Second login session,"1. Log in for second time with active promo offer
+2. Capture Mixpanel events",FREE-PROMOTION-SUBSCRIPTION event fired with SOURCEFIRST-TIME-LOGIN=FALSE,Positive,Backend,P0,Android/iOS
+TC_032,FR-016,MoEngage,Verify FREE_PROMOTION_SUBSCRIPTION event with FIRST_TIME_LOGIN=TRUE,First-time login eligible user,First login session,"1. Log in for first time with active promo
+2. Capture MoEngage events",FREE_PROMOTION_SUBSCRIPTION event fired with FIRST_TIME_LOGIN=TRUE,Positive,Backend,P0,Android/iOS
+TC_033,FR-016,MoEngage,Verify FREE_PROMOTION_SUBSCRIPTION event with FIRST_TIME_LOGIN=FALSE,Second login eligible user,Second login session,"1. Log in for second time with active promo
+2. Capture MoEngage events",FREE_PROMOTION_SUBSCRIPTION event fired with FIRST_TIME_LOGIN=FALSE,Positive,Backend,P0,Android/iOS
+TC_034,FR-016,Analytics,Verify analytics events fire when user consumes free promotional content,Eligible user watching holding/free content,Free promotional content,"1. Play holding/free content under offer
+2. Monitor Mixpanel and MoEngage
+3. Verify consumption tracking events per analytics spec",Content watched events captured for holding/free content as specified in FSD analytics section,Positive,Backend,P1,Android/iOS
+TC_035,FR-021,Performance,Verify banner rendering does not cause UI lag,Eligible user on mid-range device,Standard test device,"1. Navigate rapidly between content with banners
+2. Start/stop playback
+3. Observe UI responsiveness",No perceptible UI lag attributable to new banners or tracking,Positive,Frontend,P1,Android/iOS
+TC_036,FR-022,Backward Compatibility,Verify feature not available on older app versions,App version released before this feature,Legacy app build,"1. Install pre-feature app version
+2. Log in as eligible new user
+3. Navigate to content",First Month Free Offer improvements are not visible on older app versions,Negative,Frontend,P1,Android/iOS
+TC_037,FR-022,Backward Compatibility,Verify feature visible only after feature app release login,User logs in after feature release on supported app,Post-release app + login,"1. Update to post-feature app version
+2. Log in after release
+3. Verify offer UI",Functionality visible to users who log in after feature app release,Positive,Frontend,P1,Android/iOS
+TC_038,FR-023,Out of Scope,Verify WEB platform does not show TPMA promo banners,User on WEB platform,WEB session,"1. Access Tata Play via WEB
+2. Log in as eligible new user
+3. Browse content",Promo/sampling banners are not displayed on WEB (out of scope),Negative,Frontend,P2,WEB
+TC_039,FR-024,Out of Scope,Verify service landing page is out of scope for promo banners,Eligible user on service landing page,Service landing navigation,"1. Navigate to service landing page
+2. Observe promo/sampling banners",Promo banner changes do not appear on service landing page (out of scope),Negative,Frontend,P2,Android/iOS
+TC_040,FR-024,Out of Scope,Verify Genre PI page is out of scope for promo banners,Eligible user on Genre PI page,Genre PI navigation,"1. Navigate to Genre PI page
+2. Observe banners",Promo banner changes do not appear on Genre PI page (out of scope),Negative,Frontend,P2,Android/iOS
+TC_041,FR-002,Sampling Banner,Verify banner not shown when user is ineligible mid-session after subscription,User subscribes during session,Eligible then subscribes,"1. Start as eligible user with banner visible
+2. Complete subscription for channel/pack
+3. Return to content",Banner disappears when user no longer eligible/applicable,Positive,Integration,P1,Android/iOS
+TC_042,FR-008,Unsubscribed Banner,Verify unsubscribed banner CTA navigates to pack add flow,User not subscribed to channel,Unsubscribed content,"1. View unsubscribed channel banner
+2. Tap CTA
+3. Observe navigation",User is directed to appropriate pack/subscription flow from CTA,Positive,Frontend,P1,Android/iOS
+TC_043,FR-015,Sampling Banner,Verify banner shows zero days remaining on last day of offer,User on final day of free offer,Last-day offer account,"1. Log in on last offer day
+2. View sampling content
+3. Read banner",Banner accurately shows remaining days (0 or 1 per business rule) and expiry month,Boundary,Frontend,P1,Android/iOS
+TC_044,FR-011,PubNub API,Verify app handles PubNub connection failure gracefully,Simulate PubNub unavailable,Network fault injection,"1. Block PubNub connectivity
+2. Open app as eligible user
+3. Observe banner and error handling",App handles PubNub failure without crash; banner/eligibility degrades gracefully per error handling guidelines,Negative,Backend,P1,Android/iOS
+TC_045,FR-016,Analytics,Verify no duplicate analytics events on rapid banner refresh,Eligible user; rapid eligibility updates,Active offer,"1. Trigger rapid eligibility/day updates
+2. Monitor event stream",No duplicate FREE-PROMOTION-SUBSCRIPTION / FREE_PROMOTION_SUBSCRIPTION events for single user action,Negative,Backend,P2,Android/iOS
+TC_046,FR-001,Onboarding,Verify onboarding terms include offer conditions,New user onboarding,Eligible new user,"1. Complete onboarding
+2. Review terms/conditions section for offer",Terms and conditions for First Month Free Offer are presented during onboarding,Positive,Frontend,P1,Android/iOS
+TC_047,FR-014,Eligibility,Verify offer abuse prevention — registered user with prior pack history,User registered earlier with pack history,Legacy subscriber re-login,"1. Log in as user with subscription history
+2. Verify promo visibility",User with any subscription post registration does not see promo (eligibility logic),Negative,Backend,P0,Android/iOS
+TC_048,FR-024,Regression,Verify existing subscribed user playback unaffected,Existing subscriber without promo,Long-term subscriber,"1. Log in as existing subscriber
+2. Play content
+3. Verify no regression in playback or unrelated banners",Existing subscriber experience unchanged; no erroneous promo banners,Regression,Frontend,P1,Android/iOS
+TC_049,FR-024,Regression,Verify content browsing for non-eligible users unchanged,Non-eligible registered user,Non-eligible user,"1. Browse content lists and PI pages
+2. Verify no broken layouts from banner components",Non-eligible users see unchanged browsing experience aside from out-of-scope pages,Regression,Frontend,P2,Android/iOS
+TC_050,FR-016,Regression,Verify unrelated Mixpanel/MoEngage events not impacted,Eligible and ineligible users,Standard accounts,"1. Perform standard app actions outside promo flows
+2. Compare analytics event volume/names with baseline",Existing analytics events outside FREE-PROMOTION-SUBSCRIPTION are unaffected,Regression,Backend,P2,Android/iOS

@@ -1,0 +1,883 @@
+Summary,Issue Type,Priority,Description,Labels,Components
+[TC_001] Verify First Month Free Offer is communicated during new user onboarding,Test,P0,"*Test Case ID:* TC_001
+*Requirement ID:* FR-001
+*Test Type:* Positive
+*Layer:* Frontend
+
+*Preconditions:*
+New registered user without any pack/subscription; first app launch after feature release
+
+*Test Data:*
+Eligible new user account
+
+*Test Steps:*
+1. Install app version released after this feature
+2. Register as new user
+3. Complete onboarding flow
+4. Observe offer messaging and terms presentation
+
+*Expected Result:*
+First Month Free Offer and associated terms are clearly communicated during onboarding per FSD UX section","qa,fsd,positive,frontend",Onboarding
+[TC_002] Verify eligible new registered user without subscription sees promotional offer,Test,P0,"*Test Case ID:* TC_002
+*Requirement ID:* FR-014
+*Test Type:* Positive
+*Layer:* Frontend
+
+*Preconditions:*
+New registered user; no pack or channel subscription taken post registration
+
+*Test Data:*
+User with zero subscriptions
+
+*Test Steps:*
+1. Log in as new registered user with no subscriptions
+2. Navigate to sampling-enabled content
+3. Observe promotional/sampling UI
+
+*Expected Result:*
+Promotional offer and sampling banner are visible to eligible user","qa,fsd,positive,frontend",Eligibility
+[TC_003] Verify existing user with any subscription does not see promo banner,Test,P0,"*Test Case ID:* TC_003
+*Requirement ID:* FR-014
+*Test Type:* Negative
+*Layer:* Frontend
+
+*Preconditions:*
+User registered and has taken any pack/subscription post registration
+
+*Test Data:*
+User with active channel/pack subscription
+
+*Test Steps:*
+1. Log in as user with existing subscription
+2. Navigate to content that would be sampling-enabled for eligible users
+3. Observe banners
+
+*Expected Result:*
+Promo/sampling banner is NOT displayed; user is not eligible per FSD","qa,fsd,negative,frontend",Eligibility
+[TC_004] Verify user who subscribed after registration is not eligible for promo banner,Test,P0,"*Test Case ID:* TC_004
+*Requirement ID:* FR-014
+*Test Type:* Negative
+*Layer:* Frontend
+
+*Preconditions:*
+User took subscription after initial registration
+
+*Test Data:*
+Post-registration subscriber
+
+*Test Steps:*
+1. Log in as user who subscribed after registration
+2. Open sampling-enabled content
+3. Verify banner visibility
+
+*Expected Result:*
+Promotional sampling banner is not shown","qa,fsd,negative,frontend",Eligibility
+[TC_005] Verify sampling banner displays remaining days and expiry month during free content consumption,Test,P0,"*Test Case ID:* TC_005
+*Requirement ID:* FR-002
+*Test Type:* Positive
+*Layer:* Frontend
+
+*Preconditions:*
+Eligible user with active free offer; viewing sampling-enabled content
+
+*Test Data:*
+Offer with known remaining days
+
+*Test Steps:*
+1. Log in as eligible user
+2. Play/view sampling-enabled free content
+3. Observe sampling banner text
+
+*Expected Result:*
+Banner displays: Only xx days left to watch for free – till xx Month with correct values from backend","qa,fsd,positive,frontend",Sampling Banner
+[TC_006] Verify sampling banner appears below the player during playback,Test,P0,"*Test Case ID:* TC_006
+*Requirement ID:* FR-003
+*Test Type:* Positive
+*Layer:* Frontend
+
+*Preconditions:*
+Eligible user playing sampling-enabled content
+
+*Test Data:*
+Active free offer content
+
+*Test Steps:*
+1. Start playback of sampling-enabled content
+2. Observe area below player
+
+*Expected Result:*
+Sampling banner is displayed below the player","qa,fsd,positive,frontend",Sampling Banner
+[TC_007] Verify sampling banner appears in content lists for relevant items,Test,P1,"*Test Case ID:* TC_007
+*Requirement ID:* FR-003
+*Test Type:* Positive
+*Layer:* Frontend
+
+*Preconditions:*
+Eligible user browsing content lists with sampling-enabled items
+
+*Test Data:*
+Content list with sampling-enabled entries
+
+*Test Steps:*
+1. Navigate to content list containing sampling-enabled items
+2. Locate relevant list items
+3. Observe banner on list items
+
+*Expected Result:*
+Sampling banner is displayed in content lists for applicable items","qa,fsd,positive,frontend",Sampling Banner
+[TC_008] Verify Add Pack CTA is visible on sampling banner,Test,P0,"*Test Case ID:* TC_008
+*Requirement ID:* FR-002
+*Test Type:* Positive
+*Layer:* Frontend
+
+*Preconditions:*
+Eligible user; promotional subscription not yet availed
+
+*Test Data:*
+Sampling-enabled content
+
+*Test Steps:*
+1. View sampling banner on player or list
+2. Observe CTA on banner
+
+*Expected Result:*
+Add Pack CTA is visible and clearly labeled on the sampling banner","qa,fsd,positive,frontend",Sampling Banner
+[TC_009] Verify Add Pack CTA is generic until user avails promotion on PI page,Test,P1,"*Test Case ID:* TC_009
+*Requirement ID:* FR-018
+*Test Type:* Positive
+*Layer:* Frontend
+
+*Preconditions:*
+Eligible user has not availed promotion on PI page
+
+*Test Data:*
+Pre-availment state
+
+*Test Steps:*
+1. View sampling banner before availing offer on PI
+2. Note CTA label and behaviour
+3. Tap Add Pack
+
+*Expected Result:*
+CTA displays generic Add Pack label and navigates to appropriate pack/subscription flow","qa,fsd,positive,frontend",Add Pack CTA
+[TC_010] Verify Add Pack CTA is hidden after promotion offer availed on PI page,Test,P0,"*Test Case ID:* TC_010
+*Requirement ID:* FR-018
+*Test Type:* Positive
+*Layer:* Integration
+
+*Preconditions:*
+User avails promotional subscription on PI page; entitlement updates in real time
+
+*Test Data:*
+Post-availment eligible user
+
+*Test Steps:*
+1. Avail promotion offer on PI page
+2. Return to sampling-enabled content
+3. Observe banner CTA
+
+*Expected Result:*
+Add Pack CTA is no longer displayed after entitlement changes in real time","qa,fsd,positive,integration",Add Pack CTA
+[TC_011] Verify sampling banner not shown when promotion subscription availed,Test,P0,"*Test Case ID:* TC_011
+*Requirement ID:* FR-005
+*Test Type:* Negative
+*Layer:* Frontend
+
+*Preconditions:*
+User has availed promotional subscription
+
+*Test Data:*
+Availed promotion user
+
+*Test Steps:*
+1. Log in as user who availed promotion subscription
+2. Open sampling-enabled content
+3. Observe banner area
+
+*Expected Result:*
+Sampling banner is NOT displayed for sampling-enabled content when promotion is availed","qa,fsd,negative,frontend",Sampling Banner
+[TC_012] Verify sampling banner shown when promotion subscription not availed,Test,P0,"*Test Case ID:* TC_012
+*Requirement ID:* FR-006
+*Test Type:* Positive
+*Layer:* Frontend
+
+*Preconditions:*
+Eligible user; promotion not availed
+
+*Test Data:*
+Un-availed promotion user
+
+*Test Steps:*
+1. Log in as eligible user without availed promotion
+2. Open sampling-enabled content
+3. Observe banner
+
+*Expected Result:*
+Sampling banner IS displayed for sampling-enabled content","qa,fsd,positive,frontend",Sampling Banner
+[TC_013] Verify sampling banner disappears when offer no longer applicable,Test,P0,"*Test Case ID:* TC_013
+*Requirement ID:* FR-004
+*Test Type:* Negative
+*Layer:* Frontend
+
+*Preconditions:*
+User offer period has ended or eligibility revoked
+
+*Test Data:*
+Expired/ineligible offer state
+
+*Test Steps:*
+1. Use account where offer is no longer applicable
+2. Open previously sampling-enabled content
+3. Observe banner
+
+*Expected Result:*
+Sampling banner is not displayed when offer is no longer applicable","qa,fsd,negative,frontend",Sampling Banner
+[TC_014] Verify expiry notification banner before offer ends,Test,P1,"*Test Case ID:* TC_014
+*Requirement ID:* FR-007
+*Test Type:* Positive
+*Layer:* Frontend
+
+*Preconditions:*
+Eligible user nearing offer end date
+
+*Test Data:*
+User with 1-2 days remaining
+
+*Test Steps:*
+1. Log in as user with offer nearing expiry
+2. View free content
+3. Read banner messaging
+
+*Expected Result:*
+Banner shows Only xx days left to watch for free – till xx Month as expiry notification","qa,fsd,positive,frontend",Offer Expiry
+[TC_015] Verify remaining days on banner update in real time,Test,P1,"*Test Case ID:* TC_015
+*Requirement ID:* FR-015
+*Test Type:* Positive
+*Layer:* Integration
+
+*Preconditions:*
+Eligible user with active offer; cross midnight boundary or backend refresh
+
+*Test Data:*
+Active offer account
+
+*Test Steps:*
+1. Note remaining days on banner
+2. Wait for day rollover or trigger refresh
+3. Re-observe banner
+
+*Expected Result:*
+Remaining days count updates accurately in real time per PubNub/backend data","qa,fsd,positive,integration",Sampling Banner
+[TC_016] Verify unsubscribed channel banner when user not subscribed to channel,Test,P0,"*Test Case ID:* TC_016
+*Requirement ID:* FR-008
+*Test Type:* Positive
+*Layer:* Frontend
+
+*Preconditions:*
+User not subscribed to channel being viewed; sampling may apply
+
+*Test Data:*
+Unsubscribed channel content
+
+*Test Steps:*
+1. Open content for channel user is not subscribed to
+2. Observe banner above CTA
+
+*Expected Result:*
+Banner displays: You have not subscribed to this Channel above the CTA","qa,fsd,positive,frontend",Unsubscribed Banner
+[TC_017] Verify unsubscribed banner shown for sampling-enabled content,Test,P1,"*Test Case ID:* TC_017
+*Requirement ID:* FR-009
+*Test Type:* Positive
+*Layer:* Frontend
+
+*Preconditions:*
+User not subscribed; content is sampling-enabled
+
+*Test Data:*
+Unsubscribed + sampling content
+
+*Test Steps:*
+1. Open sampling-enabled content for unsubscribed channel
+2. Observe banners
+
+*Expected Result:*
+You have not subscribed to this Channel banner is displayed alongside applicable sampling behaviour per Figma option 1","qa,fsd,positive,frontend",Unsubscribed Banner
+[TC_018] Verify unsubscribed banner stays generic until user adds that channel,Test,P2,"*Test Case ID:* TC_018
+*Requirement ID:* FR-019
+*Test Type:* Positive
+*Layer:* Frontend
+
+*Preconditions:*
+User has not added/subscribed to specific channel
+
+*Test Data:*
+Single unsubscribed channel
+
+*Test Steps:*
+1. View unsubscribed channel content
+2. Note banner text
+3. Without subscribing navigate to another unsubscribed channel
+
+*Expected Result:*
+Banner text remains generic You have not subscribed to this Channel until user adds that particular channel","qa,fsd,positive,frontend",Unsubscribed Banner
+[TC_019] Verify promo banner matches Figma option 1 final design,Test,P1,"*Test Case ID:* TC_019
+*Requirement ID:* FR-010
+*Test Type:* Positive
+*Layer:* Frontend
+
+*Preconditions:*
+Figma handoff available; eligible user
+
+*Test Data:*
+Figma reference node 18113-64268
+
+*Test Steps:*
+1. Open sampling/unsubscribed banner on device
+2. Compare layout typography CTA placement with Figma Promo banner option 1
+
+*Expected Result:*
+UI matches Figma Promo banner option 1 (final) design","qa,fsd,positive,frontend",UI/UX
+[TC_020] Verify Offer Unlocked screen text rendered from backend,Test,P1,"*Test Case ID:* TC_020
+*Requirement ID:* FR-020
+*Test Type:* Positive
+*Layer:* Integration
+
+*Preconditions:*
+User triggers Offer Unlocked screen
+
+*Test Data:*
+Eligible new user
+
+*Test Steps:*
+1. Navigate to Offer Unlocked screen
+2. Observe displayed text
+3. Compare with backend-provided copy
+
+*Expected Result:*
+Text on Offer Unlocked screen matches backend-provided content","qa,fsd,positive,integration",Offer Unlocked Screen
+[TC_021] Verify Access Unlocked screen text rendered from backend,Test,P1,"*Test Case ID:* TC_021
+*Requirement ID:* FR-020
+*Test Type:* Positive
+*Layer:* Integration
+
+*Preconditions:*
+User triggers Access Unlocked screen
+
+*Test Data:*
+Eligible new user
+
+*Test Steps:*
+1. Navigate to Access Unlocked screen
+2. Observe displayed text
+
+*Expected Result:*
+Text on Access Unlocked screen matches backend-provided content","qa,fsd,positive,integration",Access Unlocked Screen
+[TC_022] Verify Access/Offer Unlocked text adjusts for mobile screen size,Test,P2,"*Test Case ID:* TC_022
+*Requirement ID:* FR-020
+*Test Type:* Positive
+*Layer:* Frontend
+
+*Preconditions:*
+Mobile device (phone form factor)
+
+*Test Data:*
+Phone device
+
+*Test Steps:*
+1. Open Access Unlocked and Offer Unlocked screens on phone
+2. Verify text wrapping and layout
+
+*Expected Result:*
+Text adjusts appropriately for mobile screen size without truncation or overlap","qa,fsd,positive,frontend",Responsive UI
+[TC_023] Verify Access/Offer Unlocked text adjusts for tablet and iPad,Test,P2,"*Test Case ID:* TC_023
+*Requirement ID:* FR-020
+*Test Type:* Positive
+*Layer:* Frontend
+
+*Preconditions:*
+Tablet/iPad device
+
+*Test Data:*
+Tablet/iPad
+
+*Test Steps:*
+1. Open screens on tablet and iPad
+2. Verify text layout
+
+*Expected Result:*
+Text adjusts appropriately for tablet and iPad screen sizes","qa,fsd,positive,frontend",Responsive UI
+[TC_024] Verify sampling banner message is configurable from CMS,Test,P1,"*Test Case ID:* TC_024
+*Requirement ID:* FR-017
+*Test Type:* Positive
+*Layer:* Integration
+
+*Preconditions:*
+CMS updated with new banner copy
+
+*Test Data:*
+CMS test message configured
+
+*Test Steps:*
+1. Update banner text via CMS
+2. Refresh app content for eligible user
+3. Observe banner
+
+*Expected Result:*
+Banner displays CMS-configured message text","qa,fsd,positive,integration",CMS Configuration
+[TC_025] Verify banners disabled for suspended account,Test,P0,"*Test Case ID:* TC_025
+*Requirement ID:* FR-013
+*Test Type:* Negative
+*Layer:* Frontend
+
+*Preconditions:*
+User account status = Suspended
+
+*Test Data:*
+Suspended account
+
+*Test Steps:*
+1. Log in as suspended user
+2. Navigate to content
+3. Observe sampling and promo banners
+
+*Expected Result:*
+Banners are not displayed for suspended account","qa,fsd,negative,frontend",Account Status
+[TC_026] Verify banners disabled for inactive account,Test,P0,"*Test Case ID:* TC_026
+*Requirement ID:* FR-013
+*Test Type:* Negative
+*Layer:* Frontend
+
+*Preconditions:*
+User account status = Inactive
+
+*Test Data:*
+Inactive account
+
+*Test Steps:*
+1. Log in as inactive user
+2. Navigate to content
+3. Observe banners
+
+*Expected Result:*
+Banners are not displayed for inactive account","qa,fsd,negative,frontend",Account Status
+[TC_027] Verify tracking disabled for suspended/inactive accounts,Test,P0,"*Test Case ID:* TC_027
+*Requirement ID:* FR-013
+*Test Type:* Negative
+*Layer:* Backend
+
+*Preconditions:*
+Suspended or inactive account
+
+*Test Data:*
+Suspended account
+
+*Test Steps:*
+1. Perform actions that would trigger promo events on active account
+2. Monitor analytics pipeline
+
+*Expected Result:*
+No FREE-PROMOTION-SUBSCRIPTION / FREE_PROMOTION_SUBSCRIPTION events fired for suspended/inactive accounts","qa,fsd,negative,backend",Analytics
+[TC_028] Verify PubNub returns campaign eligibility and remaining offer days,Test,P0,"*Test Case ID:* TC_028
+*Requirement ID:* FR-011
+*Test Type:* Positive
+*Layer:* Backend
+
+*Preconditions:*
+Eligible user; PubNub channel subscribed
+
+*Test Data:*
+Active campaign user
+
+*Test Steps:*
+1. Log in as eligible user
+2. Monitor PubNub messages/API
+3. Verify eligibility flag and remaining days payload
+
+*Expected Result:*
+PubNub delivers user campaign eligibility and accurate remaining offer days","qa,fsd,positive,backend",PubNub API
+[TC_029] Verify user account status updates dynamically when offer subscribed,Test,P0,"*Test Case ID:* TC_029
+*Requirement ID:* FR-012
+*Test Type:* Positive
+*Layer:* Integration
+
+*Preconditions:*
+Eligible user subscribes to promotional offer
+
+*Test Data:*
+Pre-subscription eligible user
+
+*Test Steps:*
+1. Note account status before subscription
+2. Complete promotional subscription
+3. Verify account status and UI update without re-login
+
+*Expected Result:*
+User account status updates dynamically in real time after offer subscription","qa,fsd,positive,integration",Account Status
+[TC_030] Verify FREE-PROMOTION-SUBSCRIPTION event with SOURCEFIRST-TIME-LOGIN=TRUE on first login,Test,P0,"*Test Case ID:* TC_030
+*Requirement ID:* FR-016
+*Test Type:* Positive
+*Layer:* Backend
+
+*Preconditions:*
+First-time login eligible user with active promotional offer
+
+*Test Data:*
+First login session
+
+*Test Steps:*
+1. Log in for first time with active promo offer
+2. Capture Mixpanel events
+3. Verify event payload
+
+*Expected Result:*
+FREE-PROMOTION-SUBSCRIPTION event fired with SOURCEFIRST-TIME-LOGIN=TRUE","qa,fsd,positive,backend",Mixpanel
+[TC_031] Verify FREE-PROMOTION-SUBSCRIPTION event with SOURCEFIRST-TIME-LOGIN=FALSE on second login,Test,P0,"*Test Case ID:* TC_031
+*Requirement ID:* FR-016
+*Test Type:* Positive
+*Layer:* Backend
+
+*Preconditions:*
+Second login eligible user with active promotional offer
+
+*Test Data:*
+Second login session
+
+*Test Steps:*
+1. Log in for second time with active promo offer
+2. Capture Mixpanel events
+
+*Expected Result:*
+FREE-PROMOTION-SUBSCRIPTION event fired with SOURCEFIRST-TIME-LOGIN=FALSE","qa,fsd,positive,backend",Mixpanel
+[TC_032] Verify FREE_PROMOTION_SUBSCRIPTION event with FIRST_TIME_LOGIN=TRUE,Test,P0,"*Test Case ID:* TC_032
+*Requirement ID:* FR-016
+*Test Type:* Positive
+*Layer:* Backend
+
+*Preconditions:*
+First-time login eligible user
+
+*Test Data:*
+First login session
+
+*Test Steps:*
+1. Log in for first time with active promo
+2. Capture MoEngage events
+
+*Expected Result:*
+FREE_PROMOTION_SUBSCRIPTION event fired with FIRST_TIME_LOGIN=TRUE","qa,fsd,positive,backend",MoEngage
+[TC_033] Verify FREE_PROMOTION_SUBSCRIPTION event with FIRST_TIME_LOGIN=FALSE,Test,P0,"*Test Case ID:* TC_033
+*Requirement ID:* FR-016
+*Test Type:* Positive
+*Layer:* Backend
+
+*Preconditions:*
+Second login eligible user
+
+*Test Data:*
+Second login session
+
+*Test Steps:*
+1. Log in for second time with active promo
+2. Capture MoEngage events
+
+*Expected Result:*
+FREE_PROMOTION_SUBSCRIPTION event fired with FIRST_TIME_LOGIN=FALSE","qa,fsd,positive,backend",MoEngage
+[TC_034] Verify analytics events fire when user consumes free promotional content,Test,P1,"*Test Case ID:* TC_034
+*Requirement ID:* FR-016
+*Test Type:* Positive
+*Layer:* Backend
+
+*Preconditions:*
+Eligible user watching holding/free content
+
+*Test Data:*
+Free promotional content
+
+*Test Steps:*
+1. Play holding/free content under offer
+2. Monitor Mixpanel and MoEngage
+3. Verify consumption tracking events per analytics spec
+
+*Expected Result:*
+Content watched events captured for holding/free content as specified in FSD analytics section","qa,fsd,positive,backend",Analytics
+[TC_035] Verify banner rendering does not cause UI lag,Test,P1,"*Test Case ID:* TC_035
+*Requirement ID:* FR-021
+*Test Type:* Positive
+*Layer:* Frontend
+
+*Preconditions:*
+Eligible user on mid-range device
+
+*Test Data:*
+Standard test device
+
+*Test Steps:*
+1. Navigate rapidly between content with banners
+2. Start/stop playback
+3. Observe UI responsiveness
+
+*Expected Result:*
+No perceptible UI lag attributable to new banners or tracking","qa,fsd,positive,frontend",Performance
+[TC_036] Verify feature not available on older app versions,Test,P1,"*Test Case ID:* TC_036
+*Requirement ID:* FR-022
+*Test Type:* Negative
+*Layer:* Frontend
+
+*Preconditions:*
+App version released before this feature
+
+*Test Data:*
+Legacy app build
+
+*Test Steps:*
+1. Install pre-feature app version
+2. Log in as eligible new user
+3. Navigate to content
+
+*Expected Result:*
+First Month Free Offer improvements are not visible on older app versions","qa,fsd,negative,frontend",Backward Compatibility
+[TC_037] Verify feature visible only after feature app release login,Test,P1,"*Test Case ID:* TC_037
+*Requirement ID:* FR-022
+*Test Type:* Positive
+*Layer:* Frontend
+
+*Preconditions:*
+User logs in after feature release on supported app
+
+*Test Data:*
+Post-release app + login
+
+*Test Steps:*
+1. Update to post-feature app version
+2. Log in after release
+3. Verify offer UI
+
+*Expected Result:*
+Functionality visible to users who log in after feature app release","qa,fsd,positive,frontend",Backward Compatibility
+[TC_038] Verify WEB platform does not show TPMA promo banners,Test,P2,"*Test Case ID:* TC_038
+*Requirement ID:* FR-023
+*Test Type:* Negative
+*Layer:* Frontend
+
+*Preconditions:*
+User on WEB platform
+
+*Test Data:*
+WEB session
+
+*Test Steps:*
+1. Access Tata Play via WEB
+2. Log in as eligible new user
+3. Browse content
+
+*Expected Result:*
+Promo/sampling banners are not displayed on WEB (out of scope)","qa,fsd,negative,frontend",Out of Scope
+[TC_039] Verify service landing page is out of scope for promo banners,Test,P2,"*Test Case ID:* TC_039
+*Requirement ID:* FR-024
+*Test Type:* Negative
+*Layer:* Frontend
+
+*Preconditions:*
+Eligible user on service landing page
+
+*Test Data:*
+Service landing navigation
+
+*Test Steps:*
+1. Navigate to service landing page
+2. Observe promo/sampling banners
+
+*Expected Result:*
+Promo banner changes do not appear on service landing page (out of scope)","qa,fsd,negative,frontend",Out of Scope
+[TC_040] Verify Genre PI page is out of scope for promo banners,Test,P2,"*Test Case ID:* TC_040
+*Requirement ID:* FR-024
+*Test Type:* Negative
+*Layer:* Frontend
+
+*Preconditions:*
+Eligible user on Genre PI page
+
+*Test Data:*
+Genre PI navigation
+
+*Test Steps:*
+1. Navigate to Genre PI page
+2. Observe banners
+
+*Expected Result:*
+Promo banner changes do not appear on Genre PI page (out of scope)","qa,fsd,negative,frontend",Out of Scope
+[TC_041] Verify banner not shown when user is ineligible mid-session after subscription,Test,P1,"*Test Case ID:* TC_041
+*Requirement ID:* FR-002
+*Test Type:* Positive
+*Layer:* Integration
+
+*Preconditions:*
+User subscribes during session
+
+*Test Data:*
+Eligible then subscribes
+
+*Test Steps:*
+1. Start as eligible user with banner visible
+2. Complete subscription for channel/pack
+3. Return to content
+
+*Expected Result:*
+Banner disappears when user no longer eligible/applicable","qa,fsd,positive,integration",Sampling Banner
+[TC_042] Verify unsubscribed banner CTA navigates to pack add flow,Test,P1,"*Test Case ID:* TC_042
+*Requirement ID:* FR-008
+*Test Type:* Positive
+*Layer:* Frontend
+
+*Preconditions:*
+User not subscribed to channel
+
+*Test Data:*
+Unsubscribed content
+
+*Test Steps:*
+1. View unsubscribed channel banner
+2. Tap CTA
+3. Observe navigation
+
+*Expected Result:*
+User is directed to appropriate pack/subscription flow from CTA","qa,fsd,positive,frontend",Unsubscribed Banner
+[TC_043] Verify banner shows zero days remaining on last day of offer,Test,P1,"*Test Case ID:* TC_043
+*Requirement ID:* FR-015
+*Test Type:* Boundary
+*Layer:* Frontend
+
+*Preconditions:*
+User on final day of free offer
+
+*Test Data:*
+Last-day offer account
+
+*Test Steps:*
+1. Log in on last offer day
+2. View sampling content
+3. Read banner
+
+*Expected Result:*
+Banner accurately shows remaining days (0 or 1 per business rule) and expiry month","qa,fsd,boundary,frontend",Sampling Banner
+[TC_044] Verify app handles PubNub connection failure gracefully,Test,P1,"*Test Case ID:* TC_044
+*Requirement ID:* FR-011
+*Test Type:* Negative
+*Layer:* Backend
+
+*Preconditions:*
+Simulate PubNub unavailable
+
+*Test Data:*
+Network fault injection
+
+*Test Steps:*
+1. Block PubNub connectivity
+2. Open app as eligible user
+3. Observe banner and error handling
+
+*Expected Result:*
+App handles PubNub failure without crash; banner/eligibility degrades gracefully per error handling guidelines","qa,fsd,negative,backend",PubNub API
+[TC_045] Verify no duplicate analytics events on rapid banner refresh,Test,P2,"*Test Case ID:* TC_045
+*Requirement ID:* FR-016
+*Test Type:* Negative
+*Layer:* Backend
+
+*Preconditions:*
+Eligible user; rapid eligibility updates
+
+*Test Data:*
+Active offer
+
+*Test Steps:*
+1. Trigger rapid eligibility/day updates
+2. Monitor event stream
+
+*Expected Result:*
+No duplicate FREE-PROMOTION-SUBSCRIPTION / FREE_PROMOTION_SUBSCRIPTION events for single user action","qa,fsd,negative,backend",Analytics
+[TC_046] Verify onboarding terms include offer conditions,Test,P1,"*Test Case ID:* TC_046
+*Requirement ID:* FR-001
+*Test Type:* Positive
+*Layer:* Frontend
+
+*Preconditions:*
+New user onboarding
+
+*Test Data:*
+Eligible new user
+
+*Test Steps:*
+1. Complete onboarding
+2. Review terms/conditions section for offer
+
+*Expected Result:*
+Terms and conditions for First Month Free Offer are presented during onboarding","qa,fsd,positive,frontend",Onboarding
+[TC_047] Verify offer abuse prevention — registered user with prior pack history,Test,P0,"*Test Case ID:* TC_047
+*Requirement ID:* FR-014
+*Test Type:* Negative
+*Layer:* Backend
+
+*Preconditions:*
+User registered earlier with pack history
+
+*Test Data:*
+Legacy subscriber re-login
+
+*Test Steps:*
+1. Log in as user with subscription history
+2. Verify promo visibility
+
+*Expected Result:*
+User with any subscription post registration does not see promo (eligibility logic)","qa,fsd,negative,backend",Eligibility
+[TC_048] Verify existing subscribed user playback unaffected,Test,P1,"*Test Case ID:* TC_048
+*Requirement ID:* FR-024
+*Test Type:* Regression
+*Layer:* Frontend
+
+*Preconditions:*
+Existing subscriber without promo
+
+*Test Data:*
+Long-term subscriber
+
+*Test Steps:*
+1. Log in as existing subscriber
+2. Play content
+3. Verify no regression in playback or unrelated banners
+
+*Expected Result:*
+Existing subscriber experience unchanged; no erroneous promo banners","qa,fsd,regression,frontend",Regression
+[TC_049] Verify content browsing for non-eligible users unchanged,Test,P2,"*Test Case ID:* TC_049
+*Requirement ID:* FR-024
+*Test Type:* Regression
+*Layer:* Frontend
+
+*Preconditions:*
+Non-eligible registered user
+
+*Test Data:*
+Non-eligible user
+
+*Test Steps:*
+1. Browse content lists and PI pages
+2. Verify no broken layouts from banner components
+
+*Expected Result:*
+Non-eligible users see unchanged browsing experience aside from out-of-scope pages","qa,fsd,regression,frontend",Regression
+[TC_050] Verify unrelated Mixpanel/MoEngage events not impacted,Test,P2,"*Test Case ID:* TC_050
+*Requirement ID:* FR-016
+*Test Type:* Regression
+*Layer:* Backend
+
+*Preconditions:*
+Eligible and ineligible users
+
+*Test Data:*
+Standard accounts
+
+*Test Steps:*
+1. Perform standard app actions outside promo flows
+2. Compare analytics event volume/names with baseline
+
+*Expected Result:*
+Existing analytics events outside FREE-PROMOTION-SUBSCRIPTION are unaffected","qa,fsd,regression,backend",Regression

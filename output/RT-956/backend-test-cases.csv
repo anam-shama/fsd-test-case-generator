@@ -1,0 +1,27 @@
+Test Case ID,Requirement ID,Module,Test Scenario,Preconditions,Test Data,Test Steps,Expected Result,Test Type,Layer,Priority,Platform
+TC_027,FR-013,Analytics,Verify tracking disabled for suspended/inactive accounts,Suspended or inactive account,Suspended account,"1. Perform actions that would trigger promo events on active account
+2. Monitor analytics pipeline",No FREE-PROMOTION-SUBSCRIPTION / FREE_PROMOTION_SUBSCRIPTION events fired for suspended/inactive accounts,Negative,Backend,P0,Android/iOS
+TC_028,FR-011,PubNub API,Verify PubNub returns campaign eligibility and remaining offer days,Eligible user; PubNub channel subscribed,Active campaign user,"1. Log in as eligible user
+2. Monitor PubNub messages/API
+3. Verify eligibility flag and remaining days payload",PubNub delivers user campaign eligibility and accurate remaining offer days,Positive,Backend,P0,Android/iOS
+TC_030,FR-016,Mixpanel,Verify FREE-PROMOTION-SUBSCRIPTION event with SOURCEFIRST-TIME-LOGIN=TRUE on first login,First-time login eligible user with active promotional offer,First login session,"1. Log in for first time with active promo offer
+2. Capture Mixpanel events
+3. Verify event payload",FREE-PROMOTION-SUBSCRIPTION event fired with SOURCEFIRST-TIME-LOGIN=TRUE,Positive,Backend,P0,Android/iOS
+TC_031,FR-016,Mixpanel,Verify FREE-PROMOTION-SUBSCRIPTION event with SOURCEFIRST-TIME-LOGIN=FALSE on second login,Second login eligible user with active promotional offer,Second login session,"1. Log in for second time with active promo offer
+2. Capture Mixpanel events",FREE-PROMOTION-SUBSCRIPTION event fired with SOURCEFIRST-TIME-LOGIN=FALSE,Positive,Backend,P0,Android/iOS
+TC_032,FR-016,MoEngage,Verify FREE_PROMOTION_SUBSCRIPTION event with FIRST_TIME_LOGIN=TRUE,First-time login eligible user,First login session,"1. Log in for first time with active promo
+2. Capture MoEngage events",FREE_PROMOTION_SUBSCRIPTION event fired with FIRST_TIME_LOGIN=TRUE,Positive,Backend,P0,Android/iOS
+TC_033,FR-016,MoEngage,Verify FREE_PROMOTION_SUBSCRIPTION event with FIRST_TIME_LOGIN=FALSE,Second login eligible user,Second login session,"1. Log in for second time with active promo
+2. Capture MoEngage events",FREE_PROMOTION_SUBSCRIPTION event fired with FIRST_TIME_LOGIN=FALSE,Positive,Backend,P0,Android/iOS
+TC_034,FR-016,Analytics,Verify analytics events fire when user consumes free promotional content,Eligible user watching holding/free content,Free promotional content,"1. Play holding/free content under offer
+2. Monitor Mixpanel and MoEngage
+3. Verify consumption tracking events per analytics spec",Content watched events captured for holding/free content as specified in FSD analytics section,Positive,Backend,P1,Android/iOS
+TC_044,FR-011,PubNub API,Verify app handles PubNub connection failure gracefully,Simulate PubNub unavailable,Network fault injection,"1. Block PubNub connectivity
+2. Open app as eligible user
+3. Observe banner and error handling",App handles PubNub failure without crash; banner/eligibility degrades gracefully per error handling guidelines,Negative,Backend,P1,Android/iOS
+TC_045,FR-016,Analytics,Verify no duplicate analytics events on rapid banner refresh,Eligible user; rapid eligibility updates,Active offer,"1. Trigger rapid eligibility/day updates
+2. Monitor event stream",No duplicate FREE-PROMOTION-SUBSCRIPTION / FREE_PROMOTION_SUBSCRIPTION events for single user action,Negative,Backend,P2,Android/iOS
+TC_047,FR-014,Eligibility,Verify offer abuse prevention — registered user with prior pack history,User registered earlier with pack history,Legacy subscriber re-login,"1. Log in as user with subscription history
+2. Verify promo visibility",User with any subscription post registration does not see promo (eligibility logic),Negative,Backend,P0,Android/iOS
+TC_050,FR-016,Regression,Verify unrelated Mixpanel/MoEngage events not impacted,Eligible and ineligible users,Standard accounts,"1. Perform standard app actions outside promo flows
+2. Compare analytics event volume/names with baseline",Existing analytics events outside FREE-PROMOTION-SUBSCRIPTION are unaffected,Regression,Backend,P2,Android/iOS
