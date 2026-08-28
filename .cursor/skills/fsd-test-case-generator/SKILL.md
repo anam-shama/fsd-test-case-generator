@@ -26,6 +26,7 @@ Upload FSD → Read complete FSD → Extract requirements → Generate test case
 - If the user says "uploaded FSD" or does not specify a file, use the **latest file** in `fsd/` (by modification time).
 - Check `fsd/` directory for uploaded files (PDF, Word, Excel, Markdown, text).
 - Files may be uploaded via the web UI at `http://localhost:3000` or placed manually in `fsd/`.
+- **Only the latest FSD is kept in `fsd/`** — uploading a new FSD automatically archives previous FSD files and output to `archive/`.
 - If the user pastes FSD content in chat, treat that as the source document.
 - If the user provides a link, fetch and read the complete document.
 - Read **every section** — do not stop after the first section.
@@ -304,6 +305,23 @@ Raise a query when the FSD has:
 
 | Path | Purpose |
 |------|---------|
-| `fsd/` | Upload FSD files here |
-| `output/<project>/` | Generated test case deliverables |
+| `fsd/` | Latest uploaded FSD file (+ README) |
+| `output/<project>/` | Generated test case deliverables for the current RT |
+| `archive/fsd/<timestamp>/` | Previous FSD uploads (auto-archived on new upload) |
+| `archive/output/<project>-<timestamp>/` | Previous generated output (auto-archived on new upload) |
+| `archive/archive-log.json` | Log of all archive operations |
 | `templates/test-case-template.csv` | CSV column reference |
+
+## Auto-Archive on New FSD Upload
+
+When a user uploads a **new FSD** via the web UI (`POST /api/upload`):
+
+1. **Archive** (never delete) all existing FSD files from `fsd/` → `archive/fsd/<timestamp>/`
+2. **Archive** all `output/<project>/` folders → `archive/output/<project>-<timestamp>/`
+3. Save the new FSD as the only file in `fsd/` (besides README)
+4. Log the operation in `archive/archive-log.json`
+5. UI shows **"Previous data archived"** with timestamp and moved items
+
+Timestamp format: `2026-08-28T08-10-00` (ISO-like, colons replaced with hyphens).
+
+To manually archive: `node scripts/archive-previous.js [RT-ID]`

@@ -3,6 +3,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { exportProject, extractRtId } = require("./scripts/export-qa-pack");
+const { archivePreviousData, getLatestArchiveEntry } = require("./scripts/archive-previous");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -109,6 +110,23 @@ function listOutputProjects() {
     .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 }
 
+function getLatestFsdRtId() {
+  const files = listFiles(FSD_DIR, ALLOWED_EXTENSIONS);
+  return files[0]?.rtId || null;
+}
+
+function getActiveProject() {
+  const latestRtId = getLatestFsdRtId();
+  const projects = listOutputProjects();
+
+  if (latestRtId) {
+    const match = projects.find((p) => p.name === latestRtId);
+    if (match) return latestRtId;
+  }
+
+  return projects[0]?.name || null;
+}
+
 function parseTableRow(line) {
   return line.split("|").slice(1, -1).map((cell) => cell.trim());
 }
@@ -205,19 +223,31 @@ app.get("/api/health", (_req, res) => {
 
 app.get("/api/fsd", (_req, res) => {
   const files = listFiles(FSD_DIR, ALLOWED_EXTENSIONS);
-  res.json({ files, latest: files[0] || null });
+  res.json({
+    files,
+    latest: files[0] || null,
+    activeRtId: getLatestFsdRtId(),
+    activeProject: getActiveProject(),
+  });
 });
 
-app.get("/api/ba-queries", (_req, res) => {
+app.get("/api/ba-queries", (req, res) => {
   const projects = listOutputProjects()
     .map((p) => getBaQueriesForProject(p.name))
     .filter(Boolean);
+
+  const activeProject =
+    req.query.project && projects.some((p) => p.project === req.query.project)
+      ? req.query.project
+      : getActiveProject();
 
   const allQueries = projects.flatMap((p) =>
     p.queries.map((q) => ({ ...q, project: p.project }))
   );
 
   res.json({
+    activeProject,
+    latestFsdRtId: getLatestFsdRtId(),
     projects,
     summary: {
       total: allQueries.length,
@@ -237,7 +267,11 @@ app.get("/api/ba-queries/:project", (req, res) => {
 });
 
 app.get("/api/output", (_req, res) => {
-  res.json({ projects: listOutputProjects() });
+  res.json({
+    projects: listOutputProjects(),
+    activeProject: getActiveProject(),
+    latestFsdRtId: getLatestFsdRtId(),
+  });
 });
 
 app.get("/api/output/:project", (req, res) => {
@@ -246,15 +280,38 @@ app.get("/api/output/:project", (req, res) => {
   res.json(summary);
 });
 
-app.post("/api/upload", upload.single("fsd"), (req, res) => {
+function archiveBeforeUpload(req, _res, next) {
+  req.archiveResult = archivePreviousData({ trigger: "new-fsd-upload" });
+  next();
+}
+
+app.get("/api/archive", (_req, res) => {
+  const latest = getLatestArchiveEntry(ROOT);
+  res.json({ latest });
+});
+
+app.post("/api/upload", archiveBeforeUpload, upload.single("fsd"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "No file uploaded" });
   }
 
   const rtId = extractRtId(req.file.originalname) || extractRtId(req.file.filename);
+  const archiveResult = req.archiveResult || { archived: false };
 
   res.json({
-    message: "FSD uploaded successfully",
+    message: archiveResult.archived
+      ? "FSD uploaded successfully. Previous data archived."
+      : "FSD uploaded successfully",
+    archived: archiveResult.archived,
+    archive: archiveResult.archived
+      ? {
+          timestamp: archiveResult.timestamp,
+          fsd: archiveResult.fsd,
+          output: archiveResult.output,
+          paths: archiveResult.paths,
+          message: archiveResult.message,
+        }
+      : null,
     file: {
       name: req.file.filename,
       originalName: req.file.originalname,

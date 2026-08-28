@@ -105,6 +105,7 @@
 
     .status.success { display: block; background: rgba(52, 211, 153, 0.1); color: var(--success); border: 1px solid rgba(52, 211, 153, 0.3); }
     .status.error { display: block; background: rgba(248, 113, 113, 0.1); color: var(--error); border: 1px solid rgba(248, 113, 113, 0.3); }
+    .status.archive { display: block; background: rgba(108, 158, 255, 0.1); color: var(--accent); border: 1px solid rgba(108, 158, 255, 0.3); margin-top: 8px; font-size: 0.8rem; }
 
     .steps { list-style: none; counter-reset: step; }
 
@@ -397,7 +398,7 @@
       <h1>FSD Test Case Generator</h1>
       <p class="subtitle">Upload FSD → Generate test cases → Export QA pack (ZIP, TestRail, Jira)</p>
       <div class="features">
-        <span class="feature-tag">RT Auto-Detect</span>
+        <span class="feature-tag">Auto-Archive</span>
         <span class="feature-tag">ZIP Export</span>
         <span class="feature-tag">TestRail Import</span>
         <span class="feature-tag">Jira Import</span>
@@ -417,6 +418,7 @@
       </div>
       <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.xlsx,.xls,.md,.txt" />
       <div class="status" id="status"></div>
+      <div class="status archive" id="archiveStatus" style="display:none;"></div>
     </div>
 
     <div class="card">
@@ -462,6 +464,7 @@
     const dropzone = document.getElementById("dropzone");
     const fileInput = document.getElementById("fileInput");
     const status = document.getElementById("status");
+    const archiveStatus = document.getElementById("archiveStatus");
     const fsdList = document.getElementById("fsdList");
     const outputList = document.getElementById("outputList");
     const promptBox = document.getElementById("promptBox");
@@ -580,21 +583,40 @@
       }
     }
 
+    function showArchiveStatus(archive) {
+      if (!archive || !archive.timestamp) {
+        archiveStatus.style.display = "none";
+        return;
+      }
+      const parts = [];
+      if (archive.fsd?.length) parts.push(`${archive.fsd.length} FSD file(s)`);
+      if (archive.output?.length) parts.push(`${archive.output.length} project(s): ${archive.output.join(", ")}`);
+      archiveStatus.textContent = `Previous data archived (${archive.timestamp}): ${parts.join("; ")} → archive/`;
+      archiveStatus.style.display = "block";
+    }
+
     async function uploadFile(file) {
       const formData = new FormData();
       formData.append("fsd", file);
 
       showStatus("Uploading...", "success");
+      archiveStatus.style.display = "none";
 
       try {
         const res = await fetch("/api/upload", { method: "POST", body: formData });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Upload failed");
-        showStatus(`Uploaded: ${data.file.originalName}${data.file.rtId ? ` (${data.file.rtId})` : ""}`, "success");
+        const rtLabel = data.file.rtId ? ` (${data.file.rtId})` : "";
+        showStatus(`Uploaded: ${data.file.originalName}${rtLabel}`, "success");
+        if (data.archived && data.archive) {
+          showArchiveStatus(data.archive);
+        }
         if (data.file.rtId) {
           promptBox.textContent = `Generate test cases from the uploaded FSD for ${data.file.rtId}`;
         }
         loadFsdFiles();
+        loadOutput();
+        loadBaQueries();
       } catch (err) {
         showStatus(err.message, "error");
       }
@@ -609,14 +631,15 @@
         return;
       }
 
-      fsdList.innerHTML = data.files.map((f) => `
+      const latest = data.latest || data.files[0];
+      fsdList.innerHTML = `
         <div class="file-item">
           <div>
-            <div class="file-name">${f.name}${f.rtId ? `<span class="badge">${f.rtId}</span>` : ""}</div>
-            <div class="file-meta">${formatSize(f.size)} · ${new Date(f.uploadedAt).toLocaleString()} · Project: ${f.suggestedProject}</div>
+            <div class="file-name">${latest.name}${latest.rtId ? `<span class="badge">${latest.rtId}</span>` : ""} <span class="badge">Latest</span></div>
+            <div class="file-meta">${formatSize(latest.size)} · ${new Date(latest.uploadedAt).toLocaleString()} · Project: ${latest.suggestedProject}</div>
           </div>
         </div>
-      `).join("");
+        ${data.files.length > 1 ? `<p class="empty" style="margin-top:8px;">Showing latest of ${data.files.length} file(s). Upload a new FSD to archive previous files.</p>` : ""}`;
     }
 
     async function exportProject(name) {
@@ -642,7 +665,10 @@
         return;
       }
 
-      outputList.innerHTML = data.projects.map((p) => {
+      const latestProject = data.projects[0];
+      const projects = [latestProject];
+
+      outputList.innerHTML = projects.map((p) => {
         const m = p.manifest?.summary;
         const v = p.validation;
         return `
@@ -682,7 +708,9 @@
             ${p.files.includes("full-report.md") ? `<a class="btn btn-secondary" href="/api/download/${p.name}/full-report.md">Full Report</a>` : ""}
           </div>
         </div>`;
-      }).join("");
+      }).join("") + (data.projects.length > 1
+        ? `<p class="empty" style="margin-top:8px;">Showing latest project (${latestProject.name}). ${data.projects.length - 1} older project(s) archived on new FSD upload.</p>`
+        : "");
     }
 
     window.exportProject = exportProject;

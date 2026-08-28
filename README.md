@@ -7,6 +7,7 @@ Upload any FSD → get comprehensive, Excel-ready test cases.
 | Feature | This Agent | ChatGPT / Perplexity |
 |---------|------------|----------------------|
 | FSD upload + RT auto-detect | Yes | No |
+| Auto-archive on new FSD upload | Yes | No |
 | Requirement-mapped test cases | Yes | Inconsistent |
 | ZIP QA pack export | Yes | No |
 | TestRail / Jira import files | Yes | No |
@@ -106,6 +107,17 @@ Generate test cases from the uploaded FSD
 
 The agent will read the complete FSD and save output to `output/<project>/`.
 
+### Auto-Archive on New Upload
+
+When you upload a **new FSD** (especially for a different RT), the server automatically:
+
+1. Moves previous FSD files from `fsd/` → `archive/fsd/<timestamp>/`
+2. Moves previous `output/<project>/` folders → `archive/output/<project>-<timestamp>/`
+3. Keeps only the newly uploaded FSD in `fsd/` (plus README)
+4. Logs all moves in `archive/archive-log.json` (never deletes data)
+
+The UI shows **"Previous data archived"** after upload with details of what was moved.
+
 ## What You Get
 
 | File | Description |
@@ -142,8 +154,9 @@ Generate test cases from fsd/your-file.pdf
 /agent/
 ├── public/index.html          # Upload UI
 ├── server.js                  # Upload server
-├── fsd/                       # Uploaded FSD files
-├── output/                    # Generated test cases
+├── fsd/                       # Latest uploaded FSD only (previous archived)
+├── output/                    # Generated test cases (current RT)
+├── archive/                   # Archived FSD + output (gitignored)
 ├── templates/                 # CSV templates
 ├── AGENTS.md                  # Agent instructions
 └── .cursor/skills/fsd-test-case-generator/SKILL.md

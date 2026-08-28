@@ -39,3 +39,6 @@ fsd/*
 # Generated test case output
 output/*
 !output/.gitkeep
+
+# Archived FSD uploads and previous output (may contain sensitive client documents)
+archive/
