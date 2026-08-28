@@ -134,20 +134,21 @@ function parseBaQueries(project) {
     }
     if (inTable && line.startsWith("|----------")) continue;
     if (inTable && line.startsWith("| BAQ-")) {
-      const cols = line.split("|").map((c) => c.trim()).filter(Boolean);
-      if (cols.length >= 9) {
+      const cols = line.split("|").map((c) => c.trim());
+      // cols[0] is empty (before first |), cols[1..] are data
+      if (cols.length >= 10) {
         queries.push({
-          id: cols[0],
-          fsdReference: cols[1],
-          category: cols[2],
-          priority: cols[3],
-          query: cols[4],
-          whyBlocked: cols[5],
-          impactedCases: cols[6],
-          baResponse: cols[7] || "",
-          status: cols[8] || "Open",
+          id: cols[1],
+          fsdReference: cols[2],
+          category: cols[3],
+          priority: cols[4],
+          query: cols[5],
+          whyBlocked: cols[6],
+          impactedCases: cols[7],
+          baResponse: cols[8] || "",
+          status: cols[9] || "Open",
         });
-        if ((cols[8] || "Open").toLowerCase() === "open") summary.open++;
+        if ((cols[9] || "Open").toLowerCase() === "open") summary.open++;
       }
     }
     if (inTable && line.startsWith("---")) break;
@@ -178,6 +179,95 @@ function listOutputProjects() {
     .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 }
 
+function parseTableRow(line) {
+  return line.split("|").slice(1, -1).map((cell) => cell.trim());
+}
+
+function stripMarkdown(text) {
+  return text.replace(/\*\*/g, "").replace(/__/g, "").trim();
+}
+
+function parseBaQueriesFile(projectDir) {
+  const filePath = path.join(projectDir, "ba-open-queries.md");
+  if (!fs.existsSync(filePath)) return null;
+
+  const content = fs.readFileSync(filePath, "utf8");
+  const lines = content.split("\n");
+
+  const meta = {};
+  const projectMatch = content.match(/\*\*Project:\*\*\s*(.+)/);
+  const fsdMatch = content.match(/\*\*FSD:\*\*\s*(.+)/);
+  const dateMatch = content.match(/\*\*Date:\*\*\s*(.+)/);
+  if (projectMatch) meta.project = projectMatch[1].trim();
+  if (fsdMatch) meta.fsd = fsdMatch[1].trim();
+  if (dateMatch) meta.date = dateMatch[1].trim();
+
+  const summary = { total: 0, blockers: 0, p1: 0, p2: 0, open: 0 };
+  const totalMatch = content.match(/\|\s*Total Queries\s*\|\s*(\d+)\s*\|/);
+  const p0Match = content.match(/\|\s*Blockers \(P0\)\s*\|\s*(\d+)\s*\|/);
+  const p1Match = content.match(/\|\s*High Priority \(P1\)\s*\|\s*(\d+)\s*\|/);
+  const p2Match = content.match(/\|\s*Medium Priority \(P2\)\s*\|\s*(\d+)\s*\|/);
+  if (totalMatch) summary.total = parseInt(totalMatch[1], 10);
+  if (p0Match) summary.blockers = parseInt(p0Match[1], 10);
+  if (p1Match) summary.p1 = parseInt(p1Match[1], 10);
+  if (p2Match) summary.p2 = parseInt(p2Match[1], 10);
+
+  const queries = [];
+  let inQueriesTable = false;
+
+  for (const line of lines) {
+    if (line.startsWith("## Queries for BA")) {
+      inQueriesTable = false;
+      continue;
+    }
+    if (!line.startsWith("|")) continue;
+
+    if (line.includes("Query ID") && line.includes("Priority")) continue;
+
+    if (/^\|\s*[-:]+/.test(line)) {
+      inQueriesTable = true;
+      continue;
+    }
+
+    if (!inQueriesTable) continue;
+
+    const cols = parseTableRow(line);
+    if (!cols[0] || !/^BAQ-\d+/.test(cols[0])) continue;
+
+    const status = cols[8] || "Open";
+    queries.push({
+      queryId: cols[0],
+      fsdSection: cols[1],
+      category: cols[2],
+      priority: cols[3],
+      query: stripMarkdown(cols[4]),
+      whyCannotProceed: stripMarkdown(cols[5]),
+      impactedTestCases: cols[6],
+      baResponse: cols[7],
+      status,
+    });
+  }
+
+  summary.open = queries.filter((q) => q.status.toLowerCase() === "open").length;
+  if (!summary.total) summary.total = queries.length;
+
+  return {
+    file: "ba-open-queries.md",
+    meta,
+    summary,
+    queries,
+    updatedAt: fs.statSync(filePath).mtime.toISOString(),
+  };
+}
+
+function getBaQueriesForProject(project) {
+  const projectDir = path.join(OUTPUT_DIR, project);
+  if (!fs.existsSync(projectDir)) return null;
+  const data = parseBaQueriesFile(projectDir);
+  if (!data) return null;
+  return { project, ...data };
+}
+
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", service: "fsd-test-case-generator", version: "1.2.0" });
 });
@@ -205,6 +295,34 @@ app.get("/api/output/:project", (req, res) => {
   const summary = getProjectSummary(req.params.project);
   if (!summary) return res.status(404).json({ error: "Project not found" });
   res.json(summary);
+});
+
+app.get("/api/ba-queries", (_req, res) => {
+  const projects = listOutputProjects()
+    .map((p) => getBaQueriesForProject(p.name))
+    .filter(Boolean);
+
+  const allQueries = projects.flatMap((p) =>
+    p.queries.map((q) => ({ ...q, project: p.project }))
+  );
+
+  res.json({
+    projects,
+    summary: {
+      total: allQueries.length,
+      blockers: allQueries.filter((q) => q.priority === "P0").length,
+      open: allQueries.filter((q) => q.status.toLowerCase() === "open").length,
+      projectCount: projects.length,
+    },
+  });
+});
+
+app.get("/api/ba-queries/:project", (req, res) => {
+  const data = getBaQueriesForProject(req.params.project);
+  if (!data) {
+    return res.status(404).json({ error: "BA queries not found for project" });
+  }
+  res.json(data);
 });
 
 app.post("/api/upload", upload.single("fsd"), (req, res) => {
