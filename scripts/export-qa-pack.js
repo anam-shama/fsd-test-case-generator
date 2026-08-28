@@ -4,6 +4,7 @@ const { execSync } = require("child_process");
 
 const ROOT = path.join(__dirname, "..");
 const OUTPUT_DIR = path.join(ROOT, "output");
+const VALID_LAYERS = new Set(["Frontend", "Backend", "Integration"]);
 
 function parseCsv(content) {
   const rows = [];
@@ -91,6 +92,7 @@ function convertToTestRail(headers, rows) {
       "Expected Result",
       "References",
       "Preconditions",
+      "Layer",
     ],
   ];
 
@@ -104,6 +106,7 @@ function convertToTestRail(headers, rows) {
     const priority = row[idx["Priority"]] || "P2";
     const type = row[idx["Test Type"]] || "Functional";
     const pre = row[idx["Preconditions"]] || "";
+    const layer = row[idx["Layer"]] || "";
 
     out.push([
       `${id}: ${scenario}`,
@@ -115,6 +118,7 @@ function convertToTestRail(headers, rows) {
       expected,
       req,
       pre,
+      layer,
     ]);
   }
 
@@ -145,11 +149,13 @@ function convertToJira(headers, rows) {
     const type = row[idx["Test Type"]] || "Functional";
     const pre = row[idx["Preconditions"]] || "";
     const data = row[idx["Test Data"]] || "";
+    const layer = row[idx["Layer"]] || "";
 
     const description = [
       `*Test Case ID:* ${id}`,
       `*Requirement ID:* ${req}`,
       `*Test Type:* ${type}`,
+      `*Layer:* ${layer}`,
       "",
       "*Preconditions:*",
       pre,
@@ -164,17 +170,32 @@ function convertToJira(headers, rows) {
       expected,
     ].join("\n");
 
+    const layerLabel = layer ? layer.toLowerCase() : "unknown";
+
     out.push([
       `[${id}] ${scenario}`,
       "Test",
       priority,
       description,
-      `qa,fsd,${type.toLowerCase().replace(/\s+/g, "-")}`,
+      `qa,fsd,${type.toLowerCase().replace(/\s+/g, "-")},${layerLabel}`,
       module,
     ]);
   }
 
   return out;
+}
+
+function splitByLayer(headers, rows) {
+  const idx = indexMap(headers);
+  const frontend = rows.filter((row) => row[idx["Layer"]] === "Frontend");
+  const backend = rows.filter((row) => row[idx["Layer"]] === "Backend");
+  const integration = rows.filter((row) => row[idx["Layer"]] === "Integration");
+
+  return {
+    frontend: [headers, ...frontend],
+    backend: [headers, ...backend],
+    integration: [headers, ...integration],
+  };
 }
 
 function buildManifest(project, projectDir) {
@@ -185,17 +206,20 @@ function buildManifest(project, projectDir) {
   const types = {};
   const priorities = {};
   const modules = {};
+  const layers = {};
 
   for (const row of rows) {
     const req = row[idx["Requirement ID"]];
     const type = row[idx["Test Type"]] || "Unknown";
     const priority = row[idx["Priority"]] || "Unknown";
     const module = row[idx["Module"]] || "Unknown";
+    const layer = row[idx["Layer"]] || "Unknown";
 
     if (req) requirements.add(req);
     types[type] = (types[type] || 0) + 1;
     priorities[priority] = (priorities[priority] || 0) + 1;
     modules[module] = (modules[module] || 0) + 1;
+    layers[layer] = (layers[layer] || 0) + 1;
   }
 
   const files = fs
@@ -206,10 +230,11 @@ function buildManifest(project, projectDir) {
     project,
     generatedAt: new Date().toISOString(),
     agent: "fsd-test-case-generator",
-    version: "1.1.0",
+    version: "1.2.0",
     summary: {
       totalTestCases: rows.length,
       totalRequirements: requirements.size,
+      byLayer: layers,
       byType: types,
       byPriority: priorities,
       byModule: modules,
@@ -217,6 +242,8 @@ function buildManifest(project, projectDir) {
     files,
     exports: {
       standard: "test-cases.csv",
+      frontend: "frontend-test-cases.csv",
+      backend: "backend-test-cases.csv",
       testrail: "testrail-import.csv",
       jira: "jira-import.csv",
       zip: `${project}-qa-pack.zip`,
@@ -236,6 +263,14 @@ function validateTestCases(headers, rows) {
     /system behaves/i,
   ];
 
+  if (!headers.includes("Layer")) {
+    issues.push({
+      line: 1,
+      severity: "error",
+      message: "Missing required column: Layer",
+    });
+  }
+
   rows.forEach((row, i) => {
     const line = i + 2;
     const id = row[idx["Test Case ID"]];
@@ -243,15 +278,26 @@ function validateTestCases(headers, rows) {
     const expected = row[idx["Expected Result"]] || "";
     const req = row[idx["Requirement ID"]];
     const steps = row[idx["Test Steps"]] || "";
+    const layer = row[idx["Layer"]];
 
     if (!id) issues.push({ line, severity: "error", message: "Missing Test Case ID" });
     if (id && ids.has(id)) issues.push({ line, severity: "error", message: `Duplicate Test Case ID: ${id}` });
     if (id) ids.add(id);
 
     if (!req) issues.push({ line, severity: "error", message: "Missing Requirement ID" });
-    if (!scenario) issues.push({ line, severity: "error", message: "Missing Test Scenario" });
+    if (!scenario) issues.push({ line, severity: "warning", message: "Missing Test Scenario" });
     if (!steps) issues.push({ line, severity: "warning", message: "Missing Test Steps" });
     if (!expected) issues.push({ line, severity: "error", message: "Missing Expected Result" });
+
+    if (!layer) {
+      issues.push({ line, severity: "error", message: "Missing Layer value" });
+    } else if (!VALID_LAYERS.has(layer)) {
+      issues.push({
+        line,
+        severity: "error",
+        message: `Invalid Layer "${layer}" — must be Frontend, Backend, or Integration`,
+      });
+    }
 
     if (scenario && scenarios.has(scenario)) {
       issues.push({ line, severity: "warning", message: `Possible duplicate scenario: ${scenario}` });
@@ -284,13 +330,16 @@ function exportProject(project) {
     throw new Error(`No test cases found in ${project}/test-cases.csv`);
   }
 
+  const validation = validateTestCases(headers, rows);
   const testrail = convertToTestRail(headers, rows);
   const jira = convertToJira(headers, rows);
-  const validation = validateTestCases(headers, rows);
+  const { frontend, backend } = splitByLayer(headers, rows);
   const manifest = buildManifest(project, projectDir);
 
   fs.writeFileSync(path.join(projectDir, "testrail-import.csv"), toCsv(testrail));
   fs.writeFileSync(path.join(projectDir, "jira-import.csv"), toCsv(jira));
+  fs.writeFileSync(path.join(projectDir, "frontend-test-cases.csv"), toCsv(frontend));
+  fs.writeFileSync(path.join(projectDir, "backend-test-cases.csv"), toCsv(backend));
   fs.writeFileSync(
     path.join(projectDir, "validation-report.json"),
     JSON.stringify(validation, null, 2)
@@ -330,6 +379,8 @@ module.exports = {
   extractRtId,
   readTestCases,
   buildManifest,
+  splitByLayer,
+  VALID_LAYERS,
 };
 
 if (require.main === module) {

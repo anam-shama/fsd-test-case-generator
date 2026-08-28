@@ -14,6 +14,17 @@ Upload any FSD → get comprehensive, Excel-ready test cases.
 | Coverage dashboard | Yes | No |
 | Repeatable per RT | Yes | No |
 
+## New in v1.2
+
+### BA Open Queries Section
+Generates `ba-open-queries.md` — a formal document for the Business Analyst with:
+- Structured queries for missing, unclear, or contradictory FSD items
+- Priority (P0 blockers, P1, P2)
+- Category (Missing Detail, Ambiguous, Contradiction, Incomplete Spec, Missing Reference)
+- Impacted test cases per query
+- "Items Not Appropriate to Leave in FSD" section
+- BA response tracking (Open / Answered / Deferred)
+
 ## New in v1.1
 
 ### 1. RT ID Auto-Detection

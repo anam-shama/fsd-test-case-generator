@@ -34,8 +34,9 @@ When the user says **"Generate test cases from the uploaded FSD"**, automaticall
 2. FSD is the **only source of truth** — no invented functionality.
 3. Map every test case to a Requirement ID.
 4. Cover positive, negative, boundary, API, DB, and regression (as applicable).
-5. List gaps under **Open Questions**, not as assumptions.
-6. Deliver the **10-section final report** defined in the skill.
+5. List gaps under **Open Questions** — not as assumptions.
+6. Deliver the **11-section final report** defined in the skill.
+7. Always create **`ba-open-queries.md`** — structured queries for BA on unclear/missing FSD items.
 7. Save Excel-ready CSV files to `output/<project>/`.
 
 ## Output Deliverables
@@ -65,3 +66,4 @@ Start at `TC_001`, sequential, unique.
 8. Regression Coverage
 9. Requirement Coverage Summary
 10. Open Questions
+11. Open Queries for BA (`ba-open-queries.md`)

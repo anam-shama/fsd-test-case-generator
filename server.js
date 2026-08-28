@@ -110,7 +110,7 @@ function listOutputProjects() {
 }
 
 app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", service: "fsd-test-case-generator", version: "1.1.0" });
+  res.json({ status: "ok", service: "fsd-test-case-generator", version: "1.2.0" });
 });
 
 app.get("/api/fsd", (_req, res) => {
