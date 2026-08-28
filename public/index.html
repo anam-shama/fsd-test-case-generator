@@ -165,13 +165,75 @@
     }
 
     .empty { color: var(--muted); font-size: 0.875rem; }
+
+    .badge {
+      display: inline-block;
+      background: rgba(108, 158, 255, 0.15);
+      color: var(--accent);
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-left: 8px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 12px 0;
+    }
+
+    .stat {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-value { font-size: 1.25rem; font-weight: 700; }
+    .stat-label { font-size: 0.75rem; color: var(--muted); }
+
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .feature-tag {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .pass { color: var(--success); }
+    .fail { color: var(--error); }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
       <h1>FSD Test Case Generator</h1>
-      <p class="subtitle">Upload your Functional Specification Document and generate comprehensive QA test cases</p>
+      <p class="subtitle">Upload FSD → Generate test cases → Export QA pack (ZIP, TestRail, Jira)</p>
+      <div class="features">
+        <span class="feature-tag">RT Auto-Detect</span>
+        <span class="feature-tag">ZIP Export</span>
+        <span class="feature-tag">TestRail Import</span>
+        <span class="feature-tag">Jira Import</span>
+        <span class="feature-tag">QA Validator</span>
+        <span class="feature-tag">Coverage Dashboard</span>
+      </div>
     </header>
 
     <div class="card">
@@ -237,7 +299,10 @@
         const res = await fetch("/api/upload", { method: "POST", body: formData });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Upload failed");
-        showStatus(`Uploaded: ${data.file.originalName}`, "success");
+        showStatus(`Uploaded: ${data.file.originalName}${data.file.rtId ? ` (${data.file.rtId})` : ""}`, "success");
+        if (data.file.rtId) {
+          promptBox.textContent = `Generate test cases from the uploaded FSD for ${data.file.rtId}`;
+        }
         loadFsdFiles();
       } catch (err) {
         showStatus(err.message, "error");
@@ -256,11 +321,24 @@
       fsdList.innerHTML = data.files.map((f) => `
         <div class="file-item">
           <div>
-            <div class="file-name">${f.name}</div>
-            <div class="file-meta">${formatSize(f.size)} · ${new Date(f.uploadedAt).toLocaleString()}</div>
+            <div class="file-name">${f.name}${f.rtId ? `<span class="badge">${f.rtId}</span>` : ""}</div>
+            <div class="file-meta">${formatSize(f.size)} · ${new Date(f.uploadedAt).toLocaleString()} · Project: ${f.suggestedProject}</div>
           </div>
         </div>
       `).join("");
+    }
+
+    async function exportProject(name) {
+      showStatus(`Exporting QA pack for ${name}...`, "success");
+      try {
+        const res = await fetch(`/api/export/${name}`, { method: "POST" });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Export failed");
+        showStatus(`Exported: ${data.zip} (${data.validation.valid ? "Validation PASS" : "Validation FAIL"})`, data.validation.valid ? "success" : "error");
+        loadOutput();
+      } catch (err) {
+        showStatus(err.message, "error");
+      }
     }
 
     async function loadOutput() {
@@ -272,15 +350,36 @@
         return;
       }
 
-      outputList.innerHTML = data.projects.map((p) => `
-        <div class="file-item">
-          <div>
-            <div class="file-name">${p.name}</div>
-            <div class="file-meta">${p.files.join(", ")}</div>
+      outputList.innerHTML = data.projects.map((p) => {
+        const m = p.manifest?.summary;
+        const v = p.validation;
+        return `
+        <div class="file-item" style="flex-direction:column;align-items:stretch;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div class="file-name">${p.name}</div>
+              <div class="file-meta">Updated: ${new Date(p.updatedAt).toLocaleString()}</div>
+            </div>
+            <div class="${v ? (v.valid ? "pass" : "fail") : ""}">${v ? (v.valid ? "PASS" : "FAIL") : ""}</div>
           </div>
-        </div>
-      `).join("");
+          ${m ? `
+          <div class="stats">
+            <div class="stat"><div class="stat-value">${m.totalTestCases}</div><div class="stat-label">Test Cases</div></div>
+            <div class="stat"><div class="stat-value">${m.totalRequirements}</div><div class="stat-label">Requirements</div></div>
+            <div class="stat"><div class="stat-value">${Object.keys(m.byType || {}).length}</div><div class="stat-label">Test Types</div></div>
+          </div>` : ""}
+          <div class="actions">
+            <button class="btn btn-secondary" onclick="exportProject('${p.name}')">Export QA Pack</button>
+            ${p.hasZip ? `<a class="btn btn-secondary" href="/api/download-zip/${p.name}">Download ZIP</a>` : ""}
+            ${p.files.includes("testrail-import.csv") ? `<a class="btn btn-secondary" href="/api/download/${p.name}/testrail-import.csv">TestRail CSV</a>` : ""}
+            ${p.files.includes("jira-import.csv") ? `<a class="btn btn-secondary" href="/api/download/${p.name}/jira-import.csv">Jira CSV</a>` : ""}
+            ${p.files.includes("full-report.md") ? `<a class="btn btn-secondary" href="/api/download/${p.name}/full-report.md">Full Report</a>` : ""}
+          </div>
+        </div>`;
+      }).join("");
     }
+
+    window.exportProject = exportProject;
 
     dropzone.addEventListener("click", () => fileInput.click());
 

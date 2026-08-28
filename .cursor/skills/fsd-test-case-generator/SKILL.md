@@ -104,6 +104,32 @@ Save deliverables to `output/<RT-or-project-name>/`:
 - `coverage-summary.md` — Requirement coverage summary
 - `full-report.md` — Complete 10-section report
 
+### Step 8: Export QA Pack (Required)
+
+After generating test cases, always run the export step:
+
+```bash
+npm run export <project-name>
+```
+
+Or via API: `POST /api/export/<project-name>`
+
+This generates:
+
+- `testrail-import.csv` — TestRail-compatible import file
+- `jira-import.csv` — Jira-compatible import file
+- `qa-pack-manifest.json` — Coverage dashboard metadata
+- `validation-report.json` — QA quality check (duplicates, vague results, missing fields)
+- `<project>-qa-pack.zip` — One-click downloadable QA pack
+
+### RT ID Auto-Detection
+
+When the FSD filename contains an RT ID (e.g. `RT-1277_FSD.docx`), automatically:
+
+- Use `RT-1277` as the output folder name
+- Include RT ID in all report headers
+- Suggest RT-specific agent prompt to the user
+
 ## Test Case Table Format
 
 ### Functional / UI Test Cases

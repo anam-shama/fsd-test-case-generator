@@ -2,6 +2,48 @@
 
 Upload any FSD → get comprehensive, Excel-ready test cases.
 
+## What's Different from ChatGPT / Perplexity
+
+| Feature | This Agent | ChatGPT / Perplexity |
+|---------|------------|----------------------|
+| FSD upload + RT auto-detect | Yes | No |
+| Requirement-mapped test cases | Yes | Inconsistent |
+| ZIP QA pack export | Yes | No |
+| TestRail / Jira import files | Yes | No |
+| QA validation (duplicates, vague results) | Yes | No |
+| Coverage dashboard | Yes | No |
+| Repeatable per RT | Yes | No |
+
+## New in v1.1
+
+### 1. RT ID Auto-Detection
+Upload `RT-1277_FSD.docx` → agent auto-detects `RT-1277` as project name.
+
+### 2. One-Click QA Pack ZIP Export
+Bundles all deliverables into a single ZIP:
+```bash
+npm run export RT-1277
+```
+Or click **Export QA Pack** in the web UI.
+
+### 3. TestRail Import Export
+Generates `testrail-import.csv` with Title, Steps, Expected Result, Priority, References.
+
+### 4. Jira Import Export
+Generates `jira-import.csv` with Summary, Description, Priority, Labels, Components.
+
+### 5. QA Validator
+Checks for duplicate IDs, missing requirement mapping, vague expected results:
+```bash
+npm run validate RT-1277
+```
+
+### 6. Coverage Dashboard (Web UI)
+Shows test case count, requirement count, validation pass/fail, and download buttons at http://localhost:3000
+
+### 7. QA Pack Manifest
+`qa-pack-manifest.json` — machine-readable summary with counts by type, priority, and module.
+
 ## Quick Start (3 Steps)
 
 ### 1. Start the app
