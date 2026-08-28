@@ -1,0 +1,101 @@
+Test Case ID,Requirement ID,Module,Test Scenario,Preconditions,Test Data,Test Steps,Expected Result,Test Type,Layer,Priority,Platform
+TC_001,FR-001,Bottom Navigation - Auto-play,Verify CMS-configured bottom nav icon auto-plays Lottie animation on cold start app launch,User logged in; CMS configured with one animating icon (e.g. Favourites); app force-killed; cold start,CMS animating icon = Favourites; loop count = 2,"1. Force-kill the TPMA app
+2. Launch app (cold start)
+3. Observe bottom navigation bar
+4. Identify the CMS-configured icon",The CMS-configured bottom nav icon (e.g. Favourites) begins playing its unselected Lottie auto-play animation immediately after app launch,Positive,Frontend,P0,Android/iOS
+TC_002,FR-002,Bottom Navigation - Auto-play,Verify auto-play animation completes exactly 2 loops per default CMS configuration,Cold start; CMS loop count = 2; animation configured for one icon,Loop count = 2,"1. Cold start app with loop count configured as 2
+2. Count animation loop cycles on the configured icon
+3. Observe icon state after final loop",Animation plays exactly 2 complete loops then stops,Positive,Frontend,P0,Android/iOS
+TC_003,FR-003,Bottom Navigation - Auto-play,Verify icon returns to static unselected state after auto-play animation completes,Cold start; user does not interact with animating icon; animation allowed to complete,CMS animating icon = On Demand,"1. Cold start app
+2. Allow auto-play animation to complete all configured loops without tapping
+3. Observe animating icon state","After animation completes, the icon displays in static unselected state (no ongoing Lottie animation)",Positive,Frontend,P0,Android/iOS
+TC_004,FR-004,Bottom Navigation - Session,Verify auto-play does not replay within same app session after initial completion,User completed auto-play animation once in current session; session flag set,Completed auto-play session,"1. Complete auto-play animation on cold start
+2. Navigate between bottom nav tabs
+3. Background and foreground app without force-kill
+4. Observe animating icon",Auto-play animation does NOT replay within the same app session after initial completion (per Scope: once per session),Positive,Frontend,P0,Android/iOS
+TC_005,FR-005,Bottom Navigation - Tap During Animation,Verify tapping animating icon during animation stops Lottie immediately,Cold start; auto-play animation in progress on configured icon,CMS animating icon = Favourites,"1. Cold start app and wait for animation to begin
+2. Tap the animating icon before animation completes
+3. Observe animation state at moment of tap",Lottie auto-play animation stops immediately upon user tap before completion,Positive,Frontend,P0,Android/iOS
+TC_006,FR-019,Bottom Navigation - Tap During Animation,Verify selected state Lottie plays when user taps animating icon during animation,Cold start; auto-play animation in progress,CMS animating icon = Live TV,"1. Cold start app
+2. Tap animating Live TV icon during auto-play
+3. Observe icon visual state",Selected state Lottie animation plays for the tapped icon,Positive,Frontend,P0,Android/iOS
+TC_007,FR-006,Bottom Navigation - Tap During Animation,Verify app navigates to tapped tab when user taps animating icon during animation,Cold start; auto-play in progress on configured icon,CMS animating icon = My Account,"1. Cold start app from a different default tab
+2. Tap animating My Account icon during animation
+3. Observe screen content",App navigates to My Account tab content,Positive,Frontend,P0,Android/iOS
+TC_008,FR-005,Bottom Navigation - Tap During Animation,Verify tapped animating icon remains in selected highlighted state after tap,User tapped animating icon during animation,Tapped during animation,"1. Tap animating icon during auto-play
+2. Observe icon state after navigation completes
+3. Wait 5 seconds without further interaction",Icon remains in selected (highlighted) state after tap during animation,Positive,Frontend,P0,Android/iOS
+TC_009,FR-025,Bottom Navigation - Other Icon Tap,Verify animation continues when user taps a non-animating bottom nav icon,Cold start; auto-play animation in progress on configured icon,Animating icon = Favourites; tap target = On Demand,"1. Cold start app and wait for Favourites animation to begin
+2. Tap On Demand icon (non-animating)
+3. Observe Favourites icon animation state",Auto-play animation on the configured icon continues playing until that icon is selected/tapped,Positive,Frontend,P0,Android/iOS
+TC_011,FR-010,Bottom Navigation - Navigation,Verify navigating to auto-play icon tab makes it selected,Auto-play configured icon; user navigates to that tab via tap or programmatic navigation,CMS animating icon = On Demand,"1. Cold start app
+2. Navigate to On Demand tab (animating icon)
+3. Observe icon selected state",Auto-play configured icon displays in selected (highlighted) state when user navigates to its tab,Positive,Frontend,P0,Android/iOS
+TC_012,FR-011,Bottom Navigation - Navigation,Verify returning to auto-play icon tab after navigating away shows unselected state with no re-animation,User previously visited auto-play icon tab; navigated to another tab; animation already completed or stopped,Post-animation session,"1. Complete or stop auto-play animation
+2. Navigate to auto-play icon tab
+3. Navigate to another bottom nav tab
+4. Return to original auto-play icon tab
+5. Observe icon state",Auto-play icon stays in unselected static state; no Lottie auto-play re-triggers on return,Positive,Frontend,P0,Android/iOS
+TC_013,FR-012,Bottom Navigation - Home Icon,Verify Home icon is never animated regardless of CMS configuration,CMS may attempt to configure Home; Home icon hardcoded as always selected on FE,Any CMS config,"1. Launch app on cold start
+2. Observe Home icon in bottom navigation
+3. Verify no Lottie auto-play on Home icon",Home icon is never animated; Home remains in selected state as hardcoded on FE,Positive,Frontend,P0,Android/iOS
+TC_014,FR-013,Bottom Navigation - CMS Config,Verify only one bottom nav icon animates at a time per session,CMS configured with single animating icon,One icon configured (e.g. Favourites),"1. Cold start app
+2. Observe all bottom nav icons during auto-play window
+3. Count icons with active Lottie animation",Exactly one bottom nav icon plays auto-play Lottie animation at any given time,Positive,Frontend,P0,Android/iOS
+TC_017,FR-018,Bottom Navigation - Animation Assets,Verify Live TV unselected auto-play Lottie renders correctly,CMS configured to animate Live TV; Lottie asset available,Live TV Lottie asset from CMS,"1. Configure CMS to animate Live TV
+2. Cold start app
+3. Observe Live TV icon Lottie animation quality and completion",Live TV unselected auto-play Lottie animation renders without visual defects or missing frames,Positive,Frontend,P1,Android/iOS
+TC_018,FR-018,Bottom Navigation - Animation Assets,Verify On Demand unselected auto-play Lottie renders correctly,CMS configured to animate On Demand,On Demand Lottie asset,"1. Configure CMS to animate On Demand
+2. Cold start app
+3. Observe On Demand icon animation",On Demand unselected auto-play Lottie animation renders correctly per provided asset,Positive,Frontend,P1,Android/iOS
+TC_019,FR-018,Bottom Navigation - Animation Assets,Verify Favourites unselected auto-play Lottie renders correctly,CMS configured to animate Favourites,Favourites Lottie asset,"1. Configure CMS to animate Favourites
+2. Cold start app
+3. Observe Favourites icon animation",Favourites unselected auto-play Lottie animation renders correctly per provided asset,Positive,Frontend,P1,Android/iOS
+TC_020,FR-018,Bottom Navigation - Animation Assets,Verify My Account unselected auto-play Lottie renders correctly,CMS configured to animate My Account,My Account Lottie asset,"1. Configure CMS to animate My Account
+2. Cold start app
+3. Observe My Account icon animation",My Account unselected auto-play Lottie animation renders correctly per provided asset,Positive,Frontend,P1,Android/iOS
+TC_021,FR-017,Accessibility,Verify auto-play is skipped when device prefers-reduced-motion is enabled,Device accessibility setting prefers-reduced-motion = ON; CMS animation configured,Reduced motion enabled,"1. Enable prefers-reduced-motion on device
+2. Cold start app with CMS animation configured
+3. Observe bottom nav icons",Auto-play Lottie animation is skipped; icons display in normal static states without animation,Positive,Frontend,P0,Android/iOS
+TC_022,FR-016,Bottom Navigation - Fallback,Verify auto-play is gracefully skipped when CMS animation config is missing,CMS bottom nav response missing animation configuration fields,Missing animation config,"1. Configure CMS/bottom nav API to omit animation fields
+2. Cold start app
+3. Observe bottom nav behaviour",App gracefully skips auto-play; bottom nav displays fallback static icons without crash or error,Negative,Frontend,P0,Android/iOS
+TC_023,FR-016,Bottom Navigation - Fallback,Verify fallback static icons used when app updated but animation assets unavailable,App updated to animation-capable version; CMS Lottie assets missing or unreachable,Missing Lottie assets,"1. Update app to post-feature version
+2. Simulate missing/unavailable Lottie assets
+3. Cold start app
+4. Observe bottom nav",App uses fallback static icons; auto-play skipped gracefully without crash,Negative,Frontend,P0,Android/iOS
+TC_024,FR-021,Platform Scope,Verify bottom nav icon animation is not implemented on WEB platform,User accesses Tata Play via WEB,WEB session,"1. Open Tata Play on WEB browser
+2. Log in and observe bottom navigation
+3. Reload page (cold start equivalent)",No bottom nav Lottie auto-play animation on WEB (mobile only per FSD Out of Scope),Negative,Frontend,P2,WEB
+TC_025,FR-021,Platform Scope,Verify bottom nav icon animation is not implemented on desktop,User on desktop client if applicable,Desktop session,"1. Launch desktop application if available
+2. Observe bottom navigation on launch",No bottom nav Lottie auto-play on desktop (out of scope),Negative,Frontend,P2,Desktop
+TC_026,FR-022,Backward Compatibility,Verify animation feature not active on app versions below feature release,User on app version released before RT-1266 feature,Legacy app build,"1. Install pre-RT-1266 app version
+2. Launch app with CMS animation configured
+3. Observe bottom nav icons",Bottom nav icons are not animated on older app versions; users must update app to use feature,Negative,Frontend,P1,Android/iOS
+TC_027,FR-022,Backward Compatibility,Verify animation feature active only after updating to feature release app version,User updates to post-RT-1266 app version,Post-release app build,"1. Update app to version including RT-1266
+2. Cold start with CMS animation configured
+3. Observe configured icon",Auto-play animation is available after updating to the feature release app version,Positive,Frontend,P1,Android/iOS
+TC_028,FR-012,Bottom Navigation - Home Icon,Verify CMS configuration attempting to animate Home icon is ignored,CMS configured with Home as animating icon (invalid per FSD),CMS animating icon = Home,"1. Configure CMS to select Home for animation
+2. Cold start app
+3. Observe Home and other icons",Home icon is not animated; app either skips auto-play or animates next valid configured icon per implementation without breaking Home selected state,Negative,Frontend,P1,Android/iOS
+TC_029,FR-004,Bottom Navigation - Session,Verify session flag prevents auto-play on warm app resume within same session,Auto-play completed once; app backgrounded without force-kill; same session,Completed auto-play,"1. Complete auto-play on cold start
+2. Background app (minimize)
+3. Return to foreground
+4. Observe bottom nav",Auto-play does not re-trigger on warm resume within same session after session flag is set (per Scope),Positive,Frontend,P0,Android/iOS
+TC_033,FR-005,Bottom Navigation - Edge Case,Verify tap on animating icon during final loop frame stops animation correctly,Auto-play on final loop of configured count,Loop count = 2; tap on loop 2,"1. Cold start app
+2. Wait until final loop of animation
+3. Tap animating icon on last frame
+4. Observe icon state",Animation stops immediately; selected state Lottie plays; icon remains selected,Boundary,Frontend,P2,Android/iOS
+TC_034,FR-025,Bottom Navigation - Edge Case,Verify tapping non-animating icon on last animation loop still allows animation to finish if animating icon not selected,Auto-play on final loop; user taps different icon without selecting animating icon,Final loop + other icon tap,"1. Cold start with animation on final loop
+2. Tap non-animating icon
+3. Observe animating icon until loops complete",Animation on configured icon completes its remaining loop(s) because animating icon was not selected,Boundary,Frontend,P2,Android/iOS
+TC_036,FR-017,Accessibility,Verify manual bottom nav navigation still works when prefers-reduced-motion skips auto-play,prefers-reduced-motion enabled; CMS animation configured,Reduced motion ON,"1. Enable prefers-reduced-motion
+2. Cold start app
+3. Tap each bottom nav icon
+4. Verify navigation",All bottom nav tabs remain fully navigable; selected/unselected states work correctly without auto-play,Positive,Frontend,P1,Android/iOS
+TC_038,FR-024,Out of Scope,Verify rotating animations across multiple icons per session is not implemented,CMS technically allows multiple animation configs; FSD out of scope for rotation,Multiple CMS animation entries,"1. Configure multiple icons with animation in CMS
+2. Cold start app
+3. Observe animation behaviour across session",Only one icon animates per session; no rotating animation sequence across multiple icons (out of scope),Negative,Frontend,P2,Android/iOS
+TC_041,Q-001,Guest Users,Verify guest user bottom nav behaviour regarding animation feature,Guest (non-logged-in) user session; FSD Questions section notes guest nav is hardcoded,Guest user session,"1. Launch app as guest user
+2. Observe bottom navigation on cold start
+3. Compare with logged-in user behaviour",Guest user bottom nav behaviour documented in BA response — FSD recommends not enabling for guest but product exploring feasibility; test blocked pending BA confirmation,Negative,Frontend,P1,Android/iOS

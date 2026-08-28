@@ -1,0 +1,13 @@
+Test Case ID,Requirement ID,Impacted Module,Change Description,Test Scenario,Preconditions,Test Steps,Expected Result,Regression Scope,Test Type,Layer,Priority
+TC_049,FR-001,Bottom Navigation,New Lottie auto-play animation on app launch,Verify existing bottom nav tab navigation unaffected when animation feature disabled,Animation disabled or CMS config missing; logged-in user,"1. Launch app without animation config
+2. Tap each bottom nav icon sequentially
+3. Verify screen navigation",All bottom nav tabs navigate correctly to respective screens without regression,Full bottom nav smoke,Positive,Frontend,P0
+TC_050,FR-012,Bottom Navigation - Home,Home icon hardcoded selected state,Verify Home icon always-selected behaviour unchanged after animation feature,Post-feature app version; any CMS animation config,"1. Launch app
+2. Observe Home icon on various tabs
+3. Navigate away from Home and return",Home icon remains always selected/highlighted as before; animation feature does not alter Home hardcoded behaviour,Home icon regression,Positive,Frontend,P0
+TC_051,FR-013,Bottom Navigation - Icon States,Selected/unselected static icon states for non-animating icons,Verify non-animating bottom nav icons retain correct selected/unselected states,Animation configured for one icon only; user navigates all tabs,"1. Cold start with animation on Favourites
+2. Navigate to Live TV, On Demand, My Account
+3. Verify selected/unselected states",Non-animating icons display correct selected/unselected static states without visual regression,Icon state regression,Positive,Frontend,P1
+TC_052,FR-018,Bottom Navigation - Lottie Library,Existing Lottie library integration,Verify existing Lottie rendering elsewhere in app is not broken by bottom nav animation,App with existing Lottie integrations; animation feature enabled,"1. Navigate to other app areas using Lottie animations
+2. Verify rendering
+3. Return to bottom nav and trigger auto-play",Existing Lottie integrations continue to render correctly; no library conflict from bottom nav animation,Lottie library regression,Positive,Integration,P1

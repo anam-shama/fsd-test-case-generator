@@ -41,6 +41,8 @@ output/*
 !output/.gitkeep
 !output/RT-956/
 !output/RT-956/**
+!output/RT-1266/
+!output/RT-1266/**
 
 # Archived FSD uploads and previous output (may contain sensitive client documents)
 archive/

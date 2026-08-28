@@ -1,0 +1,18 @@
+Test Case ID,Requirement ID,Module,Endpoint,Method,Test Scenario,Preconditions,Test Data (Request),Test Steps,Expected Result (Response),Test Type,Layer,Priority
+TC_043,FR-014,Bottom Nav CMS API,Bottom nav list API (CMS),GET,Verify bottom nav API returns animation configuration field specifying animating icon,Logged-in user; CMS animation configured,Standard authenticated bottom nav API request,"1. Launch app (cold start)
+2. Capture bottom nav list API request/response
+3. Inspect animation configuration fields",API response includes field specifying which bottom nav icon should auto-play (e.g. icon identifier matching Live TV / On Demand / Favourites / My Account),Positive,Backend,P0
+TC_044,FR-015,Bottom Nav CMS API,Bottom nav list API (CMS),GET,Verify bottom nav API returns configurable animation loop count,CMS loop count configured (default 2),CMS loop count = 2,"1. Cold start app
+2. Capture bottom nav API response
+3. Verify loop count field",API response includes animation loop count field with value matching CMS configuration (2 for first release),Positive,Backend,P0
+TC_045,FR-018,Bottom Nav CMS API,Bottom nav list API (CMS),GET,Verify bottom nav API returns Lottie animation asset URLs for bottom nav icons,CMS configured with animation Lottie assets,Animation Lottie URLs in CMS,"1. Cold start app
+2. Capture bottom nav API response
+3. Verify Lottie URL fields for animatable icons","API response includes Lottie animation asset URLs for Live TV, On Demand, Favourites, and My Account icons as documented in FSD Animation Assets section",Positive,Backend,P0
+TC_046,FR-016,Bottom Nav CMS API,Bottom nav list API (CMS),GET,Verify API graceful handling when animation configuration fields are absent,CMS response without animation fields,Missing animation config in API,"1. Configure CMS/API to omit animation fields
+2. Cold start app
+3. Capture API response and app behaviour",API returns valid bottom nav list without animation fields; app skips auto-play and uses fallback static icons without error,Negative,Backend,P0
+TC_047,FR-018,Bottom Nav CMS API,Bottom nav list API (CMS),GET,Verify API returns selected state icon assets already used from CMS,Existing CMS selected icon assets configured,Current CMS selected icons,"1. Capture bottom nav API response
+2. Verify selected state icon asset references",API includes selected state icon assets for all bottom nav icons as currently used in CMS (per Pre-Requisites),Positive,Backend,P1
+TC_048,Q-001,Guest Users API,Bottom nav list API (guest),GET,Verify guest user bottom nav API behaviour for animation fields,Guest user session; FSD notes guest nav is hardcoded on FE,Guest session API call,"1. Launch app as guest
+2. Capture bottom nav API calls if any
+3. Compare response with logged-in user",Guest bottom nav API/behaviour aligns with BA-confirmed approach — FSD Questions item 1 pending product decision on guest animation support,Negative,Backend,P1

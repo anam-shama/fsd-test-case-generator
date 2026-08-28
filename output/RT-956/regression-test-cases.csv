@@ -1,8 +1,0 @@
-Test Case ID,Requirement ID,Module,Test Scenario,Preconditions,Test Data,Test Steps,Expected Result,Test Type,Layer,Priority,Platform
-TC_048,FR-024,Regression,Verify existing subscribed user playback unaffected,Existing subscriber without promo,Long-term subscriber,"1. Log in as existing subscriber
-2. Play content
-3. Verify no regression in playback or unrelated banners",Existing subscriber experience unchanged; no erroneous promo banners,Regression,Frontend,P1,Android/iOS
-TC_049,FR-024,Regression,Verify content browsing for non-eligible users unchanged,Non-eligible registered user,Non-eligible user,"1. Browse content lists and PI pages
-2. Verify no broken layouts from banner components",Non-eligible users see unchanged browsing experience aside from out-of-scope pages,Regression,Frontend,P2,Android/iOS
-TC_050,FR-016,Regression,Verify unrelated Mixpanel/MoEngage events not impacted,Eligible and ineligible users,Standard accounts,"1. Perform standard app actions outside promo flows
-2. Compare analytics event volume/names with baseline",Existing analytics events outside FREE-PROMOTION-SUBSCRIPTION are unaffected,Regression,Backend,P2,Android/iOS
