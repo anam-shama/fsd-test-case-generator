@@ -16,10 +16,17 @@ Read and follow: `.cursor/skills/fsd-test-case-generator/SKILL.md`
 ## Quick Start for Users
 
 ```
-1. Place FSD in fsd/          (or paste/link in chat)
-2. Ask: "Generate test cases from the FSD"
-3. Receive output in output/<project>/
+1. Start the app: npm start  →  open http://localhost:3000
+2. Upload your FSD file (drag & drop)
+3. In Cursor Agent chat, say: "Generate test cases from the uploaded FSD"
+4. Download test cases from output/<project>/
 ```
+
+When the user says **"Generate test cases from the uploaded FSD"**, automatically:
+1. Find the latest file in `fsd/` (by modification time)
+2. Read and analyze the **entire** document
+3. Generate all test cases and save to `output/<project-name>/`
+4. Deliver the 10-section final report
 
 ## Non-Negotiable Rules
 

@@ -23,7 +23,9 @@ Upload FSD → Read complete FSD → Extract requirements → Generate test case
 
 ### Step 1: Locate and Read FSD
 
+- If the user says "uploaded FSD" or does not specify a file, use the **latest file** in `fsd/` (by modification time).
 - Check `fsd/` directory for uploaded files (PDF, Word, Excel, Markdown, text).
+- Files may be uploaded via the web UI at `http://localhost:3000` or placed manually in `fsd/`.
 - If the user pastes FSD content in chat, treat that as the source document.
 - If the user provides a link, fetch and read the complete document.
 - Read **every section** — do not stop after the first section.

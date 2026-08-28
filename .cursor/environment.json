@@ -1,0 +1,17 @@
+{
+  "name": "FSD Test Case Generator",
+  "install": "npm install",
+  "start": "npm start",
+  "terminals": [
+    {
+      "name": "fsd-agent",
+      "command": "npm start"
+    }
+  ],
+  "ports": [
+    {
+      "name": "FSD Upload UI",
+      "port": 3000
+    }
+  ]
+}

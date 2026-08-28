@@ -1,139 +1,82 @@
-# FSD Test Case Generator Agent
+# FSD Test Case Generator
 
-A reusable **Senior QA Engineer** agent that reads any Functional Specification Document (FSD) and generates comprehensive, traceable test cases with full requirement coverage.
+Upload any FSD → get comprehensive, Excel-ready test cases.
 
-## What It Does
+## Quick Start (3 Steps)
 
-```
-Upload FSD  →  Read complete FSD  →  Extract requirements  →  Generate test cases  →  Check coverage  →  Excel-ready output
-```
+### 1. Start the app
 
-- Works with **any RT (Release Ticket)** — just provide the FSD
-- Covers **all scenarios**: positive, negative, boundary, API, DB, regression
-- Maps every test case to an FSD requirement
-- Flags gaps under **Open Questions** (no invented behavior)
-
-## Quick Start
-
-### 1. Add Your FSD
-
-Place your FSD file in the `fsd/` directory:
-
-```
-fsd/RT-1234-user-login.pdf
+```bash
+npm install
+npm start
 ```
 
-Or paste the FSD content / share a document link in the agent chat.
+Open **http://localhost:3000**
 
-### 2. Run the Agent
+### 2. Upload your FSD
 
-Open a **Cursor Agent** chat in this repo and say:
+Drag and drop your Functional Specification Document (PDF, Word, Excel, Markdown, or Text).
 
-```
-Generate test cases from the FSD in fsd/RT-1234-user-login.pdf
-```
+### 3. Generate test cases
 
-Or simply:
+Open **Cursor Agent** chat and say:
 
 ```
-Generate test cases from the FSD
+Generate test cases from the uploaded FSD
 ```
 
-### 3. Get Your Output
+The agent will read the complete FSD and save output to `output/<project>/`.
 
-Deliverables are saved to `output/<project>/`:
+## What You Get
 
 | File | Description |
 |------|-------------|
 | `test-cases.csv` | Functional/UI test cases (Excel-ready) |
-| `api-test-cases.csv` | API/backend test cases |
-| `db-test-cases.csv` | Database validation test cases |
-| `regression-test-cases.csv` | Regression test cases |
+| `api-test-cases.csv` | API test cases (if in FSD) |
+| `db-test-cases.csv` | DB validation (if in FSD) |
+| `regression-test-cases.csv` | Regression cases |
 | `coverage-summary.md` | Requirement coverage summary |
 | `full-report.md` | Complete 10-section QA report |
 
-## Supported FSD Formats
+## Coverage
 
-PDF, Word, Excel, Markdown, plain text, pasted content, or document links.
+- Positive, negative, boundary, and edge cases
+- API and DB test cases (only when defined in FSD)
+- Regression for impacted functionality
+- Every test case mapped to FSD Requirement ID (`TC_001` → `FR-001`)
+- Open Questions for anything unclear (no invented behavior)
 
-## Test Case Format
+## Alternative: No Web UI
 
-| Test Case ID | Requirement ID | Module | Test Scenario | Preconditions | Test Data | Test Steps | Expected Result | Test Type | Priority | Platform |
-|--------------|----------------|--------|---------------|---------------|-----------|------------|-----------------|-----------|----------|----------|
+Place your FSD in `fsd/` manually, then ask the agent:
 
-- IDs start at `TC_001` (unique, sequential)
-- One primary scenario per test case
-- Expected results are specific and measurable
-
-## Final Report (10 Sections)
-
-1. FSD Summary
-2. Identified Requirements
-3. Assumptions
-4. Detailed Test Cases
-5. API/Backend Test Cases
-6. Database Test Cases
-7. Negative & Edge Case Coverage
-8. Regression Coverage
-9. Requirement Coverage Summary
-10. Open Questions
-
-## Agent Rules
-
-| Rule | Detail |
-|------|--------|
-| Read entire FSD | All sections before generating test cases |
-| FSD = source of truth | No invented functionality or assumptions |
-| Full coverage | Every testable requirement gets ≥ 1 test case |
-| No invented APIs/DB | Endpoints, tables, columns only from FSD |
-| Contradictions | Flagged in Open Questions |
+```
+Generate test cases from fsd/your-file.pdf
+```
 
 ## Project Structure
 
 ```
 /agent/
-├── AGENTS.md                              # Agent instructions
-├── .cursor/
-│   ├── rules/fsd-qa-agent.mdc             # Cursor rule (auto-activates on fsd/)
-│   └── skills/fsd-test-case-generator/
-│       └── SKILL.md                        # Full agent workflow & standards
-├── fsd/                                    # ← Upload your FSD here
-├── output/                                 # ← Generated test cases appear here
-├── templates/                              # CSV templates (Excel-ready)
-│   ├── test-case-template.csv
-│   ├── api-test-case-template.csv
-│   ├── db-test-case-template.csv
-│   └── regression-test-case-template.csv
-└── README.md
+├── public/index.html          # Upload UI
+├── server.js                  # Upload server
+├── fsd/                       # Uploaded FSD files
+├── output/                    # Generated test cases
+├── templates/                 # CSV templates
+├── AGENTS.md                  # Agent instructions
+└── .cursor/skills/fsd-test-case-generator/SKILL.md
 ```
 
 ## Example Prompts
 
 ```
-Generate test cases from the FSD in fsd/RT-5678-checkout.pdf
+Generate test cases from the uploaded FSD
 ```
 
 ```
-Here is the FSD for RT-9012. Generate full test coverage including API and regression cases.
-[paste FSD content]
+Generate test cases from fsd/RT-5678-checkout.pdf
 ```
 
 ```
-Read fsd/payment-module.docx and create Excel-ready test cases with requirement coverage summary.
-```
-
-## Requirement Coverage Summary
-
-Every run ends with:
-
-```
-Total Requirements:
-Total Test Cases:
-Positive Test Cases:
-Negative Test Cases:
-Boundary/Edge Cases:
-API Test Cases:
-DB Test Cases:
-Regression Test Cases:
-Uncovered Requirements:
+[paste FSD content] — generate full test coverage for RT-9012
 ```
