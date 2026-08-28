@@ -177,6 +177,26 @@
       margin-left: 8px;
     }
 
+    .active-badge {
+      display: inline-block;
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--success);
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-left: 8px;
+    }
+
+    .ba-project-select {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      margin-top: 8px;
+    }
+
     .stats {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -559,7 +579,10 @@
           <h2>Open Queries for BA</h2>
           <div class="ba-project-label" id="baProjectLabel"></div>
         </div>
-        <a class="btn btn-secondary" id="baDownloadLink" href="#" style="margin-top:0;display:none;">Download ba-open-queries.md</a>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <select id="baProjectSelect" class="ba-project-select" style="display:none;" aria-label="BA queries project"></select>
+          <a class="btn btn-secondary" id="baDownloadLink" href="#" style="margin-top:0;display:none;">Download ba-open-queries.md</a>
+        </div>
       </div>
       <div class="stats" id="baStats" style="display:none;">
         <div class="stat"><div class="stat-value" id="baStatTotal">0</div><div class="stat-label">Total Queries</div></div>
@@ -589,6 +612,7 @@
     const outputList = document.getElementById("outputList");
     const promptBox = document.getElementById("promptBox");
     const baProjectLabel = document.getElementById("baProjectLabel");
+    const baProjectSelect = document.getElementById("baProjectSelect");
     const baDownloadLink = document.getElementById("baDownloadLink");
     const baStats = document.getElementById("baStats");
     const baStatTotal = document.getElementById("baStatTotal");
@@ -597,6 +621,9 @@
     const baQueryList = document.getElementById("baQueryList");
     const archiveContent = document.getElementById("archiveContent");
     const archiveSubtitle = document.getElementById("archiveSubtitle");
+
+    let activeProject = null;
+    let selectedBaProject = null;
 
     function formatSize(bytes) {
       if (bytes < 1024) return bytes + " B";
@@ -657,6 +684,8 @@
 
         if (!data.projects.length) {
           baProjectLabel.textContent = "";
+          baProjectSelect.style.display = "none";
+          baProjectSelect.innerHTML = "";
           baStats.style.display = "none";
           baDownloadLink.style.display = "none";
           baQueryList.innerHTML = `
@@ -667,7 +696,23 @@
           return;
         }
 
-        const latest = data.projects[0];
+        if (data.projects.length > 1) {
+          const current = selectedBaProject || data.activeProject || data.projects[0].project;
+          baProjectSelect.style.display = "inline-block";
+          baProjectSelect.innerHTML = data.projects
+            .map((p) => `<option value="${escapeHtml(p.project)}"${p.project === current ? " selected" : ""}>${escapeHtml(p.project)}</option>`)
+            .join("");
+          if (!data.projects.some((p) => p.project === selectedBaProject)) {
+            selectedBaProject = data.activeProject || data.projects[0].project;
+          }
+        } else {
+          baProjectSelect.style.display = "none";
+          baProjectSelect.innerHTML = "";
+          selectedBaProject = data.projects[0].project;
+        }
+
+        const projectName = selectedBaProject || data.activeProject || data.projects[0].project;
+        const latest = data.projects.find((p) => p.project === projectName) || data.projects[0];
         const label = latest.meta?.fsd
           ? `${latest.project} · ${latest.meta.fsd}`
           : latest.project;
@@ -901,20 +946,22 @@
     }
 
     async function loadOutput() {
-      const res = await fetch("/api/output");
-      const data = await res.json();
-      activeProject = data.activeProject;
+      try {
+        const res = await fetch("/api/output");
+        const data = await res.json();
+        activeProject = data.activeProject;
 
-      if (!data.projects.length) {
-        outputList.innerHTML = '<p class="empty">No test cases generated yet</p>';
-        return;
-      }
+        if (!data.projects.length) {
+          outputList.innerHTML = '<p class="empty">No test cases generated yet</p>';
+          return;
+        }
 
-      outputList.innerHTML = data.projects.map((p) => {
-        const m = p.manifest?.summary;
-        const v = p.validation;
-        const isActive = p.name === data.activeProject;
-        return `
+        outputList.innerHTML = data.projects.map((p) => {
+          const m = p.manifest?.summary;
+          const v = p.validation;
+          const isActive = p.name === data.activeProject;
+          const byLayer = m?.byLayer || {};
+          return `
         <div class="file-item" style="flex-direction:column;align-items:stretch;${isActive ? "border-left:3px solid var(--success);padding-left:12px;" : ""}">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <div>
@@ -929,12 +976,11 @@
             <div class="stat"><div class="stat-value">${m.totalRequirements}</div><div class="stat-label">Requirements</div></div>
             <div class="stat"><div class="stat-value">${m.baQueries?.open ?? 0}</div><div class="stat-label">BA Queries Open</div></div>
           </div>
-          ${m.byLayer ? `
           <div class="stats layers">
-            <div class="stat layer-fe"><div class="stat-value">${m.byLayer.Frontend || 0}</div><div class="stat-label">Frontend</div></div>
-            <div class="stat layer-be"><div class="stat-value">${m.byLayer.Backend || 0}</div><div class="stat-label">Backend</div></div>
-            <div class="stat layer-int"><div class="stat-value">${m.byLayer.Integration || 0}</div><div class="stat-label">Integration</div></div>
-          </div>` : ""}` : ""}
+            <div class="stat layer-fe"><div class="stat-value">${byLayer.Frontend || 0}</div><div class="stat-label">Frontend</div></div>
+            <div class="stat layer-be"><div class="stat-value">${byLayer.Backend || 0}</div><div class="stat-label">Backend</div></div>
+            <div class="stat layer-int"><div class="stat-value">${byLayer.Integration || 0}</div><div class="stat-label">Integration</div></div>
+          </div>` : '<p class="empty" style="margin-top:8px;">No manifest — run Export QA Pack to generate stats</p>'}
           ${m?.baQueries?.blockers > 0 ? `
           <div class="ba-queries">
             <strong>${m.baQueries.blockers} blocker(s)</strong> — BA clarification needed before testing can be finalized.
@@ -951,7 +997,10 @@
             ${p.files.includes("full-report.md") ? `<a class="btn btn-secondary" href="/api/download/${p.name}/full-report.md">Full Report</a>` : ""}
           </div>
         </div>`;
-      }).join("");
+        }).join("");
+      } catch (err) {
+        outputList.innerHTML = '<p class="empty">Failed to load generated output</p>';
+      }
     }
 
     window.exportProject = exportProject;
