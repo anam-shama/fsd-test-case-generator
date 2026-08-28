@@ -1,0 +1,21 @@
+---
+description: Senior QA agent for FSD-based test case generation. Activates when user uploads an FSD, mentions test cases from FSD, or references a release ticket (RT).
+globs:
+  - fsd/**
+  - output/**
+  - templates/**
+alwaysApply: false
+---
+
+# FSD Test Case Generator
+
+When working with FSD files or test case generation requests:
+
+1. Read `.cursor/skills/fsd-test-case-generator/SKILL.md` and follow it completely.
+2. Read the **entire** FSD before generating any test cases.
+3. Use FSD as the sole source of truth — no invented functionality, endpoints, or schema.
+4. Generate test cases starting at `TC_001` with full traceability to Requirement IDs.
+5. Save Excel-ready CSV output to `output/<project>/`.
+6. Deliver the 10-section final report.
+
+Check `fsd/` for uploaded specification documents.

@@ -31,3 +31,12 @@ logs/*.log
 coverage/
 .pytest_cache/
 test-results/
+
+# FSD uploads (may contain sensitive client documents)
+fsd/*
+!fsd/README.md
+!fsd/.gitkeep
+
+# Generated test case output
+output/*
+!output/.gitkeep
