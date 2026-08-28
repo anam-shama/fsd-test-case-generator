@@ -3,7 +3,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { exportProject, extractRtId } = require("./scripts/export-qa-pack");
-const { archivePreviousData, getLatestArchiveEntry } = require("./scripts/archive-previous");
+const { archivePreviousData } = require("./scripts/archive-previous");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -280,14 +280,155 @@ app.get("/api/output/:project", (req, res) => {
   res.json(summary);
 });
 
+const ARCHIVE_DIR = path.join(ROOT, "archive");
+
+function readArchiveLog() {
+  const logPath = path.join(ARCHIVE_DIR, "archive-log.json");
+  if (!fs.existsSync(logPath)) return [];
+  try {
+    const log = JSON.parse(fs.readFileSync(logPath, "utf8"));
+    return Array.isArray(log) ? log : [];
+  } catch {
+    return [];
+  }
+}
+
+function listArchiveFiles(dir) {
+  if (!fs.existsSync(dir)) return [];
+  return fs
+    .readdirSync(dir)
+    .filter((name) => !name.startsWith("."))
+    .map((name) => {
+      const filePath = path.join(dir, name);
+      const stat = fs.statSync(filePath);
+      return {
+        name,
+        size: stat.size,
+        rtId: extractRtId(name),
+        downloadUrl: null,
+      };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function listArchivedFsdBatches() {
+  const fsdArchiveRoot = path.join(ARCHIVE_DIR, "fsd");
+  const log = readArchiveLog();
+  if (!fs.existsSync(fsdArchiveRoot)) return [];
+
+  return fs
+    .readdirSync(fsdArchiveRoot)
+    .filter((name) => fs.statSync(path.join(fsdArchiveRoot, name)).isDirectory())
+    .map((timestamp) => {
+      const batchDir = path.join(fsdArchiveRoot, timestamp);
+      const files = listArchiveFiles(batchDir).map((f) => ({
+        ...f,
+        downloadUrl: `/api/archive/download/fsd/${encodeURIComponent(timestamp)}/${encodeURIComponent(f.name)}`,
+      }));
+      const rtIds = [...new Set(files.map((f) => f.rtId).filter(Boolean))];
+      const logEntry = log.find((e) => e.timestamp === timestamp);
+      return {
+        timestamp,
+        archivedAt: logEntry?.archivedAt || fs.statSync(batchDir).mtime.toISOString(),
+        trigger: logEntry?.trigger || null,
+        path: path.relative(ROOT, batchDir),
+        files,
+        rtIds,
+        fileCount: files.length,
+      };
+    })
+    .sort((a, b) => new Date(b.archivedAt) - new Date(a.archivedAt));
+}
+
+function parseArchivedOutputDirName(dirName) {
+  const match = dirName.match(/^(.+)-(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2})$/);
+  if (!match) return { project: dirName, timestamp: null };
+  return { project: match[1], timestamp: match[2] };
+}
+
+function listArchivedOutputProjects() {
+  const outputArchiveRoot = path.join(ARCHIVE_DIR, "output");
+  const log = readArchiveLog();
+  if (!fs.existsSync(outputArchiveRoot)) return [];
+
+  return fs
+    .readdirSync(outputArchiveRoot)
+    .filter((name) => fs.statSync(path.join(outputArchiveRoot, name)).isDirectory())
+    .map((dirName) => {
+      const projectDir = path.join(outputArchiveRoot, dirName);
+      const { project, timestamp } = parseArchivedOutputDirName(dirName);
+      const files = listArchiveFiles(projectDir).map((f) => ({
+        ...f,
+        downloadUrl: `/api/archive/download/output/${encodeURIComponent(dirName)}/${encodeURIComponent(f.name)}`,
+      }));
+      const logEntry = timestamp
+        ? log.find((e) => e.timestamp === timestamp && e.archived?.output?.includes(project))
+        : null;
+      return {
+        project,
+        dirName,
+        timestamp: timestamp || dirName,
+        archivedAt: logEntry?.archivedAt || fs.statSync(projectDir).mtime.toISOString(),
+        trigger: logEntry?.trigger || null,
+        path: path.relative(ROOT, projectDir),
+        files,
+        fileCount: files.length,
+        hasZip: files.some((f) => f.name.endsWith("-qa-pack.zip")),
+      };
+    })
+    .sort((a, b) => new Date(b.archivedAt) - new Date(a.archivedAt));
+}
+
+function getArchiveData() {
+  const log = readArchiveLog();
+  const fsdBatches = listArchivedFsdBatches();
+  const outputProjects = listArchivedOutputProjects();
+  return {
+    fsdBatches,
+    outputProjects,
+    log,
+    latest: log.length ? log[log.length - 1] : null,
+    summary: {
+      fsdBatchCount: fsdBatches.length,
+      outputProjectCount: outputProjects.length,
+      totalLogEntries: log.length,
+      totalFsdFiles: fsdBatches.reduce((n, b) => n + b.fileCount, 0),
+      totalOutputFiles: outputProjects.reduce((n, p) => n + p.fileCount, 0),
+    },
+  };
+}
+
 function archiveBeforeUpload(req, _res, next) {
   req.archiveResult = archivePreviousData({ trigger: "new-fsd-upload" });
   next();
 }
 
 app.get("/api/archive", (_req, res) => {
-  const latest = getLatestArchiveEntry(ROOT);
-  res.json({ latest });
+  res.json(getArchiveData());
+});
+
+app.get("/api/archive/download/fsd/:timestamp/:file", (req, res) => {
+  const filePath = path.join(ARCHIVE_DIR, "fsd", req.params.timestamp, req.params.file);
+  const resolved = path.resolve(filePath);
+  if (!resolved.startsWith(path.resolve(path.join(ARCHIVE_DIR, "fsd")))) {
+    return res.status(400).json({ error: "Invalid path" });
+  }
+  if (!fs.existsSync(resolved)) {
+    return res.status(404).json({ error: "File not found" });
+  }
+  res.download(resolved);
+});
+
+app.get("/api/archive/download/output/:dirName/:file", (req, res) => {
+  const filePath = path.join(ARCHIVE_DIR, "output", req.params.dirName, req.params.file);
+  const resolved = path.resolve(filePath);
+  if (!resolved.startsWith(path.resolve(path.join(ARCHIVE_DIR, "output")))) {
+    return res.status(400).json({ error: "Invalid path" });
+  }
+  if (!fs.existsSync(resolved)) {
+    return res.status(404).json({ error: "File not found" });
+  }
+  res.download(resolved);
 });
 
 app.post("/api/upload", archiveBeforeUpload, upload.single("fsd"), (req, res) => {

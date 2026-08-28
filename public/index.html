@@ -390,6 +390,116 @@
       margin-bottom: 8px;
       opacity: 0.5;
     }
+
+    .archive-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .archive-section-header h2 { margin-bottom: 0; }
+
+    .archive-subtitle {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .archive-group {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+
+    .archive-group:last-child { margin-bottom: 0; }
+
+    .archive-group-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .archive-group-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .archive-group-meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .archive-file-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .archive-file-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.8rem;
+      padding: 6px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .archive-file-row:first-child { border-top: none; padding-top: 0; }
+
+    .archive-file-name {
+      word-break: break-all;
+      flex: 1;
+    }
+
+    .archive-download-link {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .archive-download-link:hover { color: var(--accent-hover); }
+
+    .archive-log-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .archive-log-entry {
+      font-size: 0.8rem;
+      color: var(--muted);
+      padding: 8px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .archive-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 20px 0 16px;
+    }
+
+    .archive-subheading {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 12px;
+    }
   </style>
 </head>
 <body>
@@ -458,6 +568,16 @@
       </div>
       <div id="baQueryList"><p class="empty">No BA queries yet</p></div>
     </div>
+
+    <div class="card" id="archiveCard">
+      <div class="archive-section-header">
+        <div>
+          <h2>Archive — Old FSD Data</h2>
+          <div class="archive-subtitle" id="archiveSubtitle">Previous FSD files and test outputs moved here on new upload</div>
+        </div>
+      </div>
+      <div id="archiveContent"><p class="empty">Loading archive...</p></div>
+    </div>
   </div>
 
   <script>
@@ -475,6 +595,8 @@
     const baStatBlockers = document.getElementById("baStatBlockers");
     const baStatOpen = document.getElementById("baStatOpen");
     const baQueryList = document.getElementById("baQueryList");
+    const archiveContent = document.getElementById("archiveContent");
+    const archiveSubtitle = document.getElementById("archiveSubtitle");
 
     function formatSize(bytes) {
       if (bytes < 1024) return bytes + " B";
@@ -583,6 +705,127 @@
       }
     }
 
+    function formatArchiveDate(iso) {
+      if (!iso) return "—";
+      return new Date(iso).toLocaleString();
+    }
+
+    function renderArchiveFileRow(file) {
+      return `
+        <div class="archive-file-row">
+          <span class="archive-file-name">
+            ${escapeHtml(file.name)}
+            ${file.rtId ? `<span class="badge">${escapeHtml(file.rtId)}</span>` : ""}
+            <span class="file-meta"> · ${formatSize(file.size)}</span>
+          </span>
+          ${file.downloadUrl ? `<a class="archive-download-link" href="${escapeHtml(file.downloadUrl)}">Download</a>` : ""}
+        </div>`;
+    }
+
+    function renderArchiveFsdBatch(batch) {
+      return `
+        <div class="archive-group">
+          <div class="archive-group-header">
+            <div>
+              <div class="archive-group-title">FSD batch · ${escapeHtml(batch.timestamp)}</div>
+              <div class="archive-group-meta">
+                Archived ${formatArchiveDate(batch.archivedAt)}
+                ${batch.rtIds.length ? ` · ${batch.rtIds.map((id) => escapeHtml(id)).join(", ")}` : ""}
+                ${batch.trigger ? ` · ${escapeHtml(batch.trigger)}` : ""}
+              </div>
+            </div>
+            <span class="badge">${batch.fileCount} file${batch.fileCount === 1 ? "" : "s"}</span>
+          </div>
+          <div class="archive-file-list">
+            ${batch.files.map(renderArchiveFileRow).join("")}
+          </div>
+        </div>`;
+    }
+
+    function renderArchivedOutput(project) {
+      const zipFile = project.files.find((f) => f.name.endsWith("-qa-pack.zip"));
+      return `
+        <div class="archive-group">
+          <div class="archive-group-header">
+            <div>
+              <div class="archive-group-title">${escapeHtml(project.project)}</div>
+              <div class="archive-group-meta">
+                Archived ${formatArchiveDate(project.archivedAt)}
+                ${project.trigger ? ` · ${escapeHtml(project.trigger)}` : ""}
+              </div>
+            </div>
+            <span class="badge">${project.fileCount} file${project.fileCount === 1 ? "" : "s"}</span>
+          </div>
+          <div class="archive-file-list">
+            ${project.files.slice(0, 6).map(renderArchiveFileRow).join("")}
+            ${project.files.length > 6
+              ? `<p class="empty" style="margin-top:6px;">+ ${project.files.length - 6} more file(s)</p>`
+              : ""}
+          </div>
+          ${zipFile ? `<div class="actions" style="margin-top:10px;"><a class="btn btn-secondary" href="${escapeHtml(zipFile.downloadUrl)}">Download QA Pack ZIP</a></div>` : ""}
+        </div>`;
+    }
+
+    function renderArchiveLogEntry(entry) {
+      const fsdCount = entry.archived?.fsd?.length || 0;
+      const outputCount = entry.archived?.output?.length || 0;
+      const parts = [];
+      if (fsdCount) parts.push(`${fsdCount} FSD file(s)`);
+      if (outputCount) parts.push(`${outputCount} project(s): ${(entry.archived.output || []).join(", ")}`);
+      return `
+        <div class="archive-log-entry">
+          <strong>${escapeHtml(entry.timestamp)}</strong>
+          · ${formatArchiveDate(entry.archivedAt)}
+          ${entry.trigger ? ` · ${escapeHtml(entry.trigger)}` : ""}
+          ${entry.newRtId ? ` · new upload: ${escapeHtml(entry.newRtId)}` : ""}
+          <br>${escapeHtml(parts.join("; ") || "No items recorded")}
+        </div>`;
+    }
+
+    async function loadArchive() {
+      try {
+        const res = await fetch("/api/archive");
+        const data = await res.json();
+        const hasArchives = data.fsdBatches.length || data.outputProjects.length;
+
+        if (!hasArchives) {
+          archiveSubtitle.textContent = "No archived data yet — uploading a new FSD will move previous files here";
+          archiveContent.innerHTML = `
+            <div class="ba-empty">
+              <div class="icon">📦</div>
+              <p>No archived FSD files or test outputs yet.</p>
+              <p style="margin-top:8px;">When you upload a new FSD, the previous FSD files and generated outputs are automatically moved to <code>archive/</code>.</p>
+            </div>`;
+          return;
+        }
+
+        archiveSubtitle.textContent = `${data.summary.totalFsdFiles} archived FSD file(s) · ${data.summary.outputProjectCount} archived project(s)`;
+
+        let html = "";
+
+        if (data.fsdBatches.length) {
+          html += `<div class="archive-subheading">Archived FSD Files</div>`;
+          html += data.fsdBatches.map(renderArchiveFsdBatch).join("");
+        }
+
+        if (data.outputProjects.length) {
+          if (html) html += `<hr class="archive-divider">`;
+          html += `<div class="archive-subheading">Archived Test Outputs</div>`;
+          html += data.outputProjects.map(renderArchivedOutput).join("");
+        }
+
+        if (data.log.length) {
+          html += `<hr class="archive-divider">`;
+          html += `<div class="archive-subheading">Archive Log</div>`;
+          html += `<div class="archive-log-list">${data.log.slice().reverse().map(renderArchiveLogEntry).join("")}</div>`;
+        }
+
+        archiveContent.innerHTML = html;
+      } catch (err) {
+        archiveContent.innerHTML = `<p class="empty">Failed to load archive data</p>`;
+      }
+    }
+
     function showArchiveStatus(archive) {
       if (!archive || !archive.timestamp) {
         archiveStatus.style.display = "none";
@@ -617,6 +860,7 @@
         loadFsdFiles();
         loadOutput();
         loadBaQueries();
+        loadArchive();
       } catch (err) {
         showStatus(err.message, "error");
       }
@@ -743,7 +987,8 @@
     loadFsdFiles();
     loadOutput();
     loadBaQueries();
-    setInterval(() => { loadFsdFiles(); loadOutput(); loadBaQueries(); }, 5000);
+    loadArchive();
+    setInterval(() => { loadFsdFiles(); loadOutput(); loadBaQueries(); loadArchive(); }, 5000);
   </script>
 </body>
 </html>
