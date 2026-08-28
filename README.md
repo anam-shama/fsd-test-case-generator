@@ -26,6 +26,8 @@ Generates `ba-open-queries.md` — a formal document for the Business Analyst wi
 - "Items Not Appropriate to Leave in FSD" section
 - BA response tracking (Open / Answered / Deferred)
 
+The web UI shows an **Open Queries for BA** card with summary stats (total, P0 blockers, open count), priority badges, and per-query details. API: `GET /api/ba-queries` (all projects) or `GET /api/ba-queries/:project`.
+
 ### Frontend / Backend Layer Classification
 Every test case now includes a **Layer** column: `Frontend`, `Backend`, or `Integration`.
 

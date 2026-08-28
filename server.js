@@ -99,76 +99,6 @@ function getProjectSummary(name) {
   return summary;
 }
 
-function parseBaQueries(project) {
-  const filePath = path.join(OUTPUT_DIR, project, "ba-open-queries.md");
-  if (!fs.existsSync(filePath)) return null;
-
-  const content = fs.readFileSync(filePath, "utf8");
-  const lines = content.split("\n");
-
-  const summary = {
-    total: 0,
-    blockers: 0,
-    high: 0,
-    medium: 0,
-    open: 0,
-  };
-
-  const totalMatch = content.match(/\|\s*Total Queries\s*\|\s*(\d+)\s*\|/);
-  const p0Match = content.match(/\|\s*Blockers \(P0\)\s*\|\s*(\d+)\s*\|/);
-  const p1Match = content.match(/\|\s*High Priority \(P1\)\s*\|\s*(\d+)\s*\|/);
-  const p2Match = content.match(/\|\s*Medium Priority \(P2\)\s*\|\s*(\d+)\s*\|/);
-
-  if (totalMatch) summary.total = parseInt(totalMatch[1], 10);
-  if (p0Match) summary.blockers = parseInt(p0Match[1], 10);
-  if (p1Match) summary.high = parseInt(p1Match[1], 10);
-  if (p2Match) summary.medium = parseInt(p2Match[1], 10);
-
-  const queries = [];
-  let inTable = false;
-
-  for (const line of lines) {
-    if (line.startsWith("| Query ID |")) {
-      inTable = true;
-      continue;
-    }
-    if (inTable && line.startsWith("|----------")) continue;
-    if (inTable && line.startsWith("| BAQ-")) {
-      const cols = line.split("|").map((c) => c.trim());
-      // cols[0] is empty (before first |), cols[1..] are data
-      if (cols.length >= 10) {
-        queries.push({
-          id: cols[1],
-          fsdReference: cols[2],
-          category: cols[3],
-          priority: cols[4],
-          query: cols[5],
-          whyBlocked: cols[6],
-          impactedCases: cols[7],
-          baResponse: cols[8] || "",
-          status: cols[9] || "Open",
-        });
-        if ((cols[9] || "Open").toLowerCase() === "open") summary.open++;
-      }
-    }
-    if (inTable && line.startsWith("---")) break;
-  }
-
-  if (!summary.open) summary.open = queries.filter((q) => q.status.toLowerCase() === "open").length;
-
-  return { project, summary, queries, downloadUrl: `/api/download/${project}/ba-open-queries.md` };
-}
-
-function listAllBaQueries() {
-  if (!fs.existsSync(OUTPUT_DIR)) return [];
-  return fs
-    .readdirSync(OUTPUT_DIR)
-    .filter((name) => fs.statSync(path.join(OUTPUT_DIR, name)).isDirectory())
-    .map((name) => parseBaQueries(name))
-    .filter(Boolean)
-    .sort((a, b) => b.queries.length - a.queries.length);
-}
-
 function listOutputProjects() {
   if (!fs.existsSync(OUTPUT_DIR)) return [];
   return fs
@@ -257,6 +187,7 @@ function parseBaQueriesFile(projectDir) {
     summary,
     queries,
     updatedAt: fs.statSync(filePath).mtime.toISOString(),
+    downloadUrl: `/api/download/${path.basename(projectDir)}/ba-open-queries.md`,
   };
 }
 
@@ -275,26 +206,6 @@ app.get("/api/health", (_req, res) => {
 app.get("/api/fsd", (_req, res) => {
   const files = listFiles(FSD_DIR, ALLOWED_EXTENSIONS);
   res.json({ files, latest: files[0] || null });
-});
-
-app.get("/api/ba-queries", (_req, res) => {
-  res.json({ projects: listAllBaQueries() });
-});
-
-app.get("/api/ba-queries/:project", (req, res) => {
-  const data = parseBaQueries(req.params.project);
-  if (!data) return res.status(404).json({ error: "BA queries not found for project" });
-  res.json(data);
-});
-
-app.get("/api/output", (_req, res) => {
-  res.json({ projects: listOutputProjects() });
-});
-
-app.get("/api/output/:project", (req, res) => {
-  const summary = getProjectSummary(req.params.project);
-  if (!summary) return res.status(404).json({ error: "Project not found" });
-  res.json(summary);
 });
 
 app.get("/api/ba-queries", (_req, res) => {
@@ -323,6 +234,16 @@ app.get("/api/ba-queries/:project", (req, res) => {
     return res.status(404).json({ error: "BA queries not found for project" });
   }
   res.json(data);
+});
+
+app.get("/api/output", (_req, res) => {
+  res.json({ projects: listOutputProjects() });
+});
+
+app.get("/api/output/:project", (req, res) => {
+  const summary = getProjectSummary(req.params.project);
+  if (!summary) return res.status(404).json({ error: "Project not found" });
+  res.json(summary);
 });
 
 app.post("/api/upload", upload.single("fsd"), (req, res) => {

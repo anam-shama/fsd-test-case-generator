@@ -28,7 +28,7 @@
     }
 
     .container {
-      max-width: 900px;
+      max-width: 960px;
       margin: 0 auto;
       padding: 48px 24px;
     }
@@ -239,17 +239,94 @@
 
     .ba-queries strong { color: var(--error); }
 
-    .query-card {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 14px 16px;
-      margin-bottom: 10px;
+    .ba-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
     }
 
-    .query-card:last-child { margin-bottom: 0; }
+    .ba-section-header h2 { margin-bottom: 0; }
 
-    .query-header {
+    .ba-project-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .priority-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .priority-p0 {
+      background: rgba(248, 113, 113, 0.2);
+      color: var(--error);
+      border: 1px solid rgba(248, 113, 113, 0.4);
+    }
+
+    .priority-p1 {
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .priority-p2 {
+      background: rgba(108, 158, 255, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(108, 158, 255, 0.3);
+    }
+
+    .status-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .status-open {
+      background: rgba(248, 113, 113, 0.12);
+      color: var(--error);
+    }
+
+    .status-answered {
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--success);
+    }
+
+    .status-other {
+      background: rgba(154, 160, 166, 0.12);
+      color: var(--muted);
+    }
+
+    .ba-query-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .ba-query-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.875rem;
+    }
+
+    .ba-query-card.blocker {
+      border-color: rgba(248, 113, 113, 0.35);
+      background: rgba(248, 113, 113, 0.04);
+    }
+
+    .ba-query-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
@@ -257,48 +334,60 @@
       margin-bottom: 8px;
     }
 
-    .query-id { font-weight: 600; font-size: 0.9rem; }
-
-    .priority-badge {
-      font-size: 0.7rem;
+    .ba-query-id {
       font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 999px;
-      flex-shrink: 0;
+      font-family: monospace;
+      font-size: 0.85rem;
     }
 
-    .priority-p0 { background: rgba(248,113,113,0.2); color: var(--error); }
-    .priority-p1 { background: rgba(245,158,11,0.2); color: #f59e0b; }
-    .priority-p2 { background: rgba(108,158,255,0.15); color: var(--accent); }
+    .ba-query-meta {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
 
-    .query-text { font-size: 0.875rem; margin-bottom: 8px; line-height: 1.5; }
-
-    .query-meta {
+    .ba-query-category {
       font-size: 0.75rem;
       color: var(--muted);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
+      background: var(--surface);
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
     }
 
-    .query-meta span { display: inline-flex; align-items: center; gap: 4px; }
+    .ba-query-text {
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
 
-    .status-open { color: var(--error); }
-    .status-answered { color: var(--success); }
-
-    .section-header {
+    .ba-query-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .section-header h2 { margin-bottom: 0; }
-
-    .project-label {
+      flex-wrap: wrap;
+      gap: 8px;
       font-size: 0.8rem;
       color: var(--muted);
-      margin-bottom: 12px;
+    }
+
+    .ba-query-tcs {
+      font-family: monospace;
+      font-size: 0.75rem;
+    }
+
+    .ba-empty {
+      text-align: center;
+      padding: 32px 16px;
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+
+    .ba-empty .icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      opacity: 0.5;
     }
   </style>
 </head>
@@ -348,18 +437,24 @@
     </div>
 
     <div class="card">
-      <div class="section-header">
-        <h2>Open Queries for BA</h2>
-        <a class="btn btn-secondary" id="baDownloadAll" style="margin-top:0;display:none;" href="#">Download Full Doc</a>
-      </div>
-      <div id="baQueriesSection">
-        <p class="empty">No open queries yet. Generate test cases from an FSD to see BA clarification items.</p>
-      </div>
-    </div>
-
-    <div class="card">
       <h2>Generated Output</h2>
       <div class="output-list" id="outputList"><p class="empty">No test cases generated yet</p></div>
+    </div>
+
+    <div class="card" id="baQueriesCard">
+      <div class="ba-section-header">
+        <div>
+          <h2>Open Queries for BA</h2>
+          <div class="ba-project-label" id="baProjectLabel"></div>
+        </div>
+        <a class="btn btn-secondary" id="baDownloadLink" href="#" style="margin-top:0;display:none;">Download ba-open-queries.md</a>
+      </div>
+      <div class="stats" id="baStats" style="display:none;">
+        <div class="stat"><div class="stat-value" id="baStatTotal">0</div><div class="stat-label">Total Queries</div></div>
+        <div class="stat"><div class="stat-value fail" id="baStatBlockers">0</div><div class="stat-label">Blockers (P0)</div></div>
+        <div class="stat"><div class="stat-value" id="baStatOpen">0</div><div class="stat-label">Open</div></div>
+      </div>
+      <div id="baQueryList"><p class="empty">No BA queries yet</p></div>
     </div>
   </div>
 
@@ -369,14 +464,19 @@
     const status = document.getElementById("status");
     const fsdList = document.getElementById("fsdList");
     const outputList = document.getElementById("outputList");
-    const baQueriesSection = document.getElementById("baQueriesSection");
-    const baDownloadAll = document.getElementById("baDownloadAll");
     const promptBox = document.getElementById("promptBox");
+    const baProjectLabel = document.getElementById("baProjectLabel");
+    const baDownloadLink = document.getElementById("baDownloadLink");
+    const baStats = document.getElementById("baStats");
+    const baStatTotal = document.getElementById("baStatTotal");
+    const baStatBlockers = document.getElementById("baStatBlockers");
+    const baStatOpen = document.getElementById("baStatOpen");
+    const baQueryList = document.getElementById("baQueryList");
 
-    function priorityClass(p) {
-      if (p === "P0") return "priority-p0";
-      if (p === "P1") return "priority-p1";
-      return "priority-p2";
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + " B";
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+      return (bytes / (1024 * 1024)).toFixed(1) + " MB";
     }
 
     function escapeHtml(str) {
@@ -387,54 +487,97 @@
         .replace(/"/g, "&quot;");
     }
 
-    async function loadBaQueries() {
-      const res = await fetch("/api/ba-queries");
-      const data = await res.json();
-
-      if (!data.projects.length) {
-        baQueriesSection.innerHTML = '<p class="empty">No open queries yet. Generate test cases from an FSD to see BA clarification items.</p>';
-        baDownloadAll.style.display = "none";
-        return;
-      }
-
-      const project = data.projects[0];
-      baDownloadAll.href = project.downloadUrl;
-      baDownloadAll.style.display = "inline-block";
-
-      baQueriesSection.innerHTML = `
-        <div class="project-label">Project: <strong>${escapeHtml(project.project)}</strong></div>
-        <div class="stats">
-          <div class="stat"><div class="stat-value">${project.summary.total}</div><div class="stat-label">Total Queries</div></div>
-          <div class="stat"><div class="stat-value" style="color:var(--error)">${project.summary.blockers}</div><div class="stat-label">P0 Blockers</div></div>
-          <div class="stat"><div class="stat-value">${project.summary.open}</div><div class="stat-label">Open</div></div>
-        </div>
-        ${project.queries.map((q) => `
-          <div class="query-card">
-            <div class="query-header">
-              <span class="query-id">${escapeHtml(q.id)}</span>
-              <span class="priority-badge ${priorityClass(q.priority)}">${escapeHtml(q.priority)}</span>
-            </div>
-            <div class="query-text">${escapeHtml(q.query)}</div>
-            <div class="query-meta">
-              <span>📋 ${escapeHtml(q.category)}</span>
-              <span>📌 ${escapeHtml(q.fsdReference)}</span>
-              <span>🧪 ${escapeHtml(q.impactedCases)}</span>
-              <span class="status-${q.status.toLowerCase()}">● ${escapeHtml(q.status)}</span>
-            </div>
-          </div>
-        `).join("")}
-      `;
-    }
-
-    function formatSize(bytes) {
-      if (bytes < 1024) return bytes + " B";
-      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-      return (bytes / (1024 * 1024)).toFixed(1) + " MB";
-    }
-
     function showStatus(message, type) {
       status.textContent = message;
       status.className = "status " + type;
+    }
+
+    function priorityClass(priority) {
+      if (priority === "P0") return "priority-p0";
+      if (priority === "P1") return "priority-p1";
+      return "priority-p2";
+    }
+
+    function statusClass(status) {
+      const s = (status || "").toLowerCase();
+      if (s === "open") return "status-open";
+      if (s === "answered") return "status-answered";
+      return "status-other";
+    }
+
+    function renderBaQuery(q) {
+      const isBlocker = q.priority === "P0";
+      return `
+        <div class="ba-query-card${isBlocker ? " blocker" : ""}">
+          <div class="ba-query-top">
+            <span class="ba-query-id">${escapeHtml(q.queryId)}</span>
+            <div class="ba-query-meta">
+              <span class="priority-badge ${priorityClass(q.priority)}">${escapeHtml(q.priority)}</span>
+              <span class="ba-query-category">${escapeHtml(q.category)}</span>
+              <span class="status-badge ${statusClass(q.status)}">${escapeHtml(q.status)}</span>
+            </div>
+          </div>
+          <div class="ba-query-text">${escapeHtml(q.query)}</div>
+          <div class="ba-query-footer">
+            <span class="ba-query-tcs">Impacted: ${escapeHtml(q.impactedTestCases || "—")}</span>
+            ${q.fsdSection ? `<span>${escapeHtml(q.fsdSection)}</span>` : ""}
+          </div>
+        </div>`;
+    }
+
+    async function loadBaQueries() {
+      try {
+        const res = await fetch("/api/ba-queries");
+        const data = await res.json();
+
+        if (!data.projects.length) {
+          baProjectLabel.textContent = "";
+          baStats.style.display = "none";
+          baDownloadLink.style.display = "none";
+          baQueryList.innerHTML = `
+            <div class="ba-empty">
+              <div class="icon">📋</div>
+              <p>No BA queries yet. Queries are generated when the FSD has unclear or missing requirements.</p>
+            </div>`;
+          return;
+        }
+
+        const latest = data.projects[0];
+        const label = latest.meta?.fsd
+          ? `${latest.project} · ${latest.meta.fsd}`
+          : latest.project;
+        baProjectLabel.textContent = label;
+
+        baStats.style.display = "grid";
+        baStatTotal.textContent = latest.summary.total;
+        baStatBlockers.textContent = latest.summary.blockers;
+        baStatOpen.textContent = latest.summary.open;
+
+        baDownloadLink.href = `/api/download/${latest.project}/ba-open-queries.md`;
+        baDownloadLink.style.display = "inline-block";
+
+        if (latest.queries.length === 0) {
+          baQueryList.innerHTML = `
+            <div class="ba-empty">
+              <div class="icon">✅</div>
+              <p>No open queries for this project.</p>
+            </div>`;
+          return;
+        }
+
+        const openQueries = latest.queries.filter((q) => q.status.toLowerCase() === "open");
+        const displayQueries = openQueries.length ? openQueries : latest.queries;
+
+        baQueryList.innerHTML = `
+          <div class="ba-query-list">
+            ${displayQueries.map(renderBaQuery).join("")}
+          </div>
+          ${openQueries.length && openQueries.length < latest.queries.length
+            ? `<p class="empty" style="margin-top:12px;">Showing ${openQueries.length} open of ${latest.queries.length} total queries</p>`
+            : ""}`;
+      } catch (err) {
+        baQueryList.innerHTML = `<p class="empty">Failed to load BA queries</p>`;
+      }
     }
 
     async function uploadFile(file) {
@@ -484,6 +627,7 @@
         if (!res.ok) throw new Error(data.error || "Export failed");
         showStatus(`Exported: ${data.zip} (${data.validation.valid ? "Validation PASS" : "Validation FAIL"})`, data.validation.valid ? "success" : "error");
         loadOutput();
+        loadBaQueries();
       } catch (err) {
         showStatus(err.message, "error");
       }
@@ -569,9 +713,9 @@
     });
 
     loadFsdFiles();
-    loadBaQueries();
     loadOutput();
-    setInterval(() => { loadFsdFiles(); loadBaQueries(); loadOutput(); }, 5000);
+    loadBaQueries();
+    setInterval(() => { loadFsdFiles(); loadOutput(); loadBaQueries(); }, 5000);
   </script>
 </body>
 </html>
