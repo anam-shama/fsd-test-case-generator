@@ -659,23 +659,22 @@
     async function loadOutput() {
       const res = await fetch("/api/output");
       const data = await res.json();
+      activeProject = data.activeProject;
 
       if (!data.projects.length) {
         outputList.innerHTML = '<p class="empty">No test cases generated yet</p>';
         return;
       }
 
-      const latestProject = data.projects[0];
-      const projects = [latestProject];
-
-      outputList.innerHTML = projects.map((p) => {
+      outputList.innerHTML = data.projects.map((p) => {
         const m = p.manifest?.summary;
         const v = p.validation;
+        const isActive = p.name === data.activeProject;
         return `
-        <div class="file-item" style="flex-direction:column;align-items:stretch;">
+        <div class="file-item" style="flex-direction:column;align-items:stretch;${isActive ? "border-left:3px solid var(--success);padding-left:12px;" : ""}">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <div>
-              <div class="file-name">${p.name}</div>
+              <div class="file-name">${p.name}${isActive ? '<span class="active-badge">Latest FSD</span>' : ""}</div>
               <div class="file-meta">Updated: ${new Date(p.updatedAt).toLocaleString()}</div>
             </div>
             <div class="${v ? (v.valid ? "pass" : "fail") : ""}">${v ? (v.valid ? "PASS" : "FAIL") : ""}</div>
@@ -708,9 +707,7 @@
             ${p.files.includes("full-report.md") ? `<a class="btn btn-secondary" href="/api/download/${p.name}/full-report.md">Full Report</a>` : ""}
           </div>
         </div>`;
-      }).join("") + (data.projects.length > 1
-        ? `<p class="empty" style="margin-top:8px;">Showing latest project (${latestProject.name}). ${data.projects.length - 1} older project(s) archived on new FSD upload.</p>`
-        : "");
+      }).join("");
     }
 
     window.exportProject = exportProject;
@@ -738,6 +735,11 @@
       navigator.clipboard.writeText(promptBox.textContent.trim());
       promptBox.textContent = "Copied!";
       setTimeout(() => { promptBox.textContent = "Generate test cases from the uploaded FSD"; }, 1500);
+    });
+
+    baProjectSelect.addEventListener("change", () => {
+      selectedBaProject = baProjectSelect.value;
+      loadBaQueries();
     });
 
     loadFsdFiles();
