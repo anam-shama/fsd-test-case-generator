@@ -12,6 +12,7 @@ Upload any FSD → get comprehensive, Excel-ready test cases.
 | TestRail / Jira import files | Yes | No |
 | QA validation (duplicates, vague results) | Yes | No |
 | Coverage dashboard | Yes | No |
+| Frontend / Backend layer split | Yes | No |
 | Repeatable per RT | Yes | No |
 
 ## New in v1.2
@@ -24,6 +25,21 @@ Generates `ba-open-queries.md` — a formal document for the Business Analyst wi
 - Impacted test cases per query
 - "Items Not Appropriate to Leave in FSD" section
 - BA response tracking (Open / Answered / Deferred)
+
+### Frontend / Backend Layer Classification
+Every test case now includes a **Layer** column: `Frontend`, `Backend`, or `Integration`.
+
+| Layer | What It Covers |
+|-------|----------------|
+| **Frontend** | UI rendering, navigation, visual states, client interactions, toasts, badges, scroll, toggle |
+| **Backend** | API request/response, data contracts, server logic, analytics event firing |
+| **Integration** | E2E flows spanning UI + API together |
+
+Export automatically splits test cases into:
+- `frontend-test-cases.csv` — Frontend-layer cases
+- `backend-test-cases.csv` — Backend-layer cases
+
+Layer counts appear in `qa-pack-manifest.json` and the web UI coverage dashboard.
 
 ## New in v1.1
 
@@ -53,7 +69,15 @@ npm run validate RT-1277
 Shows test case count, requirement count, validation pass/fail, and download buttons at http://localhost:3000
 
 ### 7. QA Pack Manifest
-`qa-pack-manifest.json` — machine-readable summary with counts by type, priority, and module.
+`qa-pack-manifest.json` — machine-readable summary with counts by layer, type, priority, and module.
+
+### 8. Frontend / Backend Layer Split
+Test cases are classified by layer and exported as separate CSVs:
+```bash
+npm run export RT-1277
+# → frontend-test-cases.csv, backend-test-cases.csv
+```
+The web UI coverage dashboard shows Frontend, Backend, and Integration counts.
 
 ## Quick Start (3 Steps)
 
@@ -84,7 +108,9 @@ The agent will read the complete FSD and save output to `output/<project>/`.
 
 | File | Description |
 |------|-------------|
-| `test-cases.csv` | Functional/UI test cases (Excel-ready) |
+| `test-cases.csv` | Functional/UI test cases with Layer column (Excel-ready) |
+| `frontend-test-cases.csv` | Frontend-layer cases (generated on export) |
+| `backend-test-cases.csv` | Backend-layer cases (generated on export) |
 | `api-test-cases.csv` | API test cases (if in FSD) |
 | `db-test-cases.csv` | DB validation (if in FSD) |
 | `regression-test-cases.csv` | Regression cases |
@@ -97,6 +123,7 @@ The agent will read the complete FSD and save output to `output/<project>/`.
 - API and DB test cases (only when defined in FSD)
 - Regression for impacted functionality
 - Every test case mapped to FSD Requirement ID (`TC_001` → `FR-001`)
+- Layer classification: Frontend, Backend, or Integration
 - Open Questions for anything unclear (no invented behavior)
 
 ## Alternative: No Web UI
