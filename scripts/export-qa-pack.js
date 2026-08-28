@@ -198,6 +198,21 @@ function splitByLayer(headers, rows) {
   };
 }
 
+function countBaQueries(projectDir) {
+  const file = path.join(projectDir, "ba-open-queries.md");
+  if (!fs.existsSync(file)) return null;
+  const content = fs.readFileSync(file, "utf8");
+  const totalMatch = content.match(/\|\s*Total Queries\s*\|\s*(\d+)\s*\|/);
+  const p0Match = content.match(/\|\s*Blockers \(P0\)\s*\|\s*(\d+)\s*\|/);
+  const openMatches = content.match(/\|\s*Open\s*\|/g);
+  return {
+    total: totalMatch ? parseInt(totalMatch[1], 10) : openMatches?.length || 0,
+    blockers: p0Match ? parseInt(p0Match[1], 10) : 0,
+    open: openMatches?.length || 0,
+    file: "ba-open-queries.md",
+  };
+}
+
 function buildManifest(project, projectDir) {
   const { headers, rows } = readTestCases(projectDir);
   const idx = indexMap(headers);
@@ -226,6 +241,8 @@ function buildManifest(project, projectDir) {
     .readdirSync(projectDir)
     .filter((f) => !f.startsWith(".") && fs.statSync(path.join(projectDir, f)).isFile());
 
+  const baQueries = countBaQueries(projectDir);
+
   return {
     project,
     generatedAt: new Date().toISOString(),
@@ -238,6 +255,7 @@ function buildManifest(project, projectDir) {
       byType: types,
       byPriority: priorities,
       byModule: modules,
+      baQueries: baQueries || { total: 0, blockers: 0, open: 0 },
     },
     files,
     exports: {
@@ -246,6 +264,7 @@ function buildManifest(project, projectDir) {
       backend: "backend-test-cases.csv",
       testrail: "testrail-import.csv",
       jira: "jira-import.csv",
+      baOpenQueries: "ba-open-queries.md",
       zip: `${project}-qa-pack.zip`,
     },
   };
@@ -381,6 +400,8 @@ module.exports = {
   buildManifest,
   splitByLayer,
   VALID_LAYERS,
+  parseCsv,
+  toCsv,
 };
 
 if (require.main === module) {

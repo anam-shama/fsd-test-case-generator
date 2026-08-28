@@ -183,6 +183,14 @@
       margin: 12px 0;
     }
 
+    .stats.layers {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .layer-fe .stat-value { color: #6c9eff; }
+    .layer-be .stat-value { color: #f59e0b; }
+    .layer-int .stat-value { color: #34d399; }
+
     .stat {
       background: var(--bg);
       border: 1px solid var(--border);
@@ -245,6 +253,7 @@
         <span class="feature-tag">QA Validator</span>
         <span class="feature-tag">BA Open Queries</span>
         <span class="feature-tag">Coverage Dashboard</span>
+        <span class="feature-tag">FE/BE Layer Split</span>
       </div>
     </header>
 
