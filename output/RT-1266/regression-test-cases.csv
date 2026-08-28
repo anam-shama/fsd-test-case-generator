@@ -1,0 +1,13 @@
+Test Case ID,Requirement ID,Module,Test Scenario,Preconditions,Test Data,Test Steps,Expected Result,Test Type,Layer,Priority,Platform
+TC_049,FR-024,Regression,Verify existing bottom nav tab navigation unaffected by animation feature,Logged-in user; animation enabled,Standard navigation,"1. Cold start app
+2. Tap each bottom nav tab sequentially
+3. Verify screen loads",All bottom nav tabs navigate correctly to respective screens without regression,Regression,Frontend,P0,Android/iOS
+TC_050,FR-024,Regression,Verify static bottom nav icons display correctly when animation skipped,CMS config missing or reduced motion enabled,No animation scenario,"1. Launch app with animation skipped
+2. Observe all bottom nav icons
+3. Verify labels and icons",All bottom nav icons and labels display correctly without animation; no layout breakage,Regression,Frontend,P1,Android/iOS
+TC_051,FR-024,Regression,Verify bottom nav performance not degraded during Lottie animation,Mid-range test device; animation playing,Performance baseline,"1. Cold start with animation
+2. Rapidly switch tabs during animation
+3. Monitor UI responsiveness",No perceptible UI lag or jank attributable to Lottie auto-play animation,Regression,Frontend,P2,Android/iOS
+TC_052,FR-024,Regression,Verify unrelated app features unaffected during animation playback,Logged-in user; animation in progress,Standard app usage,"1. Start animation on cold start
+2. Use search playback notifications while animation plays
+3. Verify core features",Core app features outside bottom nav animation work normally during animation playback,Regression,Integration,P2,Android/iOS

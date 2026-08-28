@@ -1,0 +1,15 @@
+Test Case ID,Requirement ID,Module,Endpoint,Method,Test Scenario,Preconditions,Test Data (Request),Test Steps,Expected Result (Response),Test Type,Layer,Priority
+TC_044,FR-024,Bottom Nav API,Bottom Nav List API (bottom nav list endpoint),GET,Verify bottom nav list API returns animation Lottie URL for configured icon,Logged-in user; API returns animation config,Valid CMS animation payload,"1. Capture bottom nav list API response on cold start
+2. Locate configured animated icon entry
+3. Verify animation fields",API response includes Lottie animation URL/asset reference for CMS-configured animated icon,Positive,Backend,P0
+TC_045,FR-024,Bottom Nav API,Bottom Nav List API (bottom nav list endpoint),GET,Verify bottom nav list API returns configurable loop count,Logged-in user; CMS loopCount configured,loopCount=2,"1. Call bottom nav list API
+2. Inspect animation configuration fields
+3. Compare with CMS",API response includes loop count value matching CMS configuration (default 2 for first release),Positive,Backend,P0
+TC_046,FR-015,Bottom Nav API,Bottom Nav List API (bottom nav list endpoint),GET,Verify API response when animation config absent — no animation fields or null,CMS without animation configuration,Missing animation config,"1. Call bottom nav list API with no animation config
+2. Inspect response
+3. Verify FE handling",API returns valid bottom nav list without animation fields or with null/empty animation config; FE skips auto-play,Negative,Backend,P0
+TC_047,FR-023,Bottom Nav API,Bottom Nav List API (bottom nav list endpoint),GET,Verify guest user bottom nav API vs hardcoded FE nav for animation,Guest user session,Guest vs logged-in,"1. Call bottom nav API as guest (if applicable)
+2. Compare with logged-in API response
+3. Document animation field presence",API/FE behavior for guest users documented per BA decision on animation for guest hardcoded nav,Positive,Backend,P1
+TC_048,FR-024,Bottom Nav API,Bottom Nav List API (bottom nav list endpoint),GET,Verify API returns selected icon assets for all bottom nav items,Logged-in user; standard CMS config,Full nav list,"1. Call bottom nav list API
+2. Verify selected and unselected icon assets for each nav item",All bottom nav items include selected icon assets already used in CMS as per FSD prerequisites,Positive,Backend,P1
